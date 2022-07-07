@@ -1,7 +1,15 @@
+//querydsl 추가
+buildscript {
+    ext {
+        queryDslVersion = "5.0.0"
+    }
+}
 plugins {
     id 'org.springframework.boot' version '2.7.1'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    //querydsl 추가
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
 
 group = 'com.seventeam'
@@ -34,12 +42,43 @@ dependencies {
 
     //selenium
     implementation 'org.seleniumhq.selenium:selenium-java:4.2.1'
-
+    //querydsl 추가
+    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+    implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
     // 테스트 의존성 추가
     testCompileOnly 'org.projectlombok:lombok:1.18.12'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
+
+    //sweager3
+    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+    implementation 'io.springfox:springfox-swagger-ui:3.0.0'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+//querydsl에서 사용할 경로를 선언
+def querydslDir = "$buildDir/generated/querydsl"
+
+
+//querydsl 설정을 추가합니다. JPA 사용 여부와 사용할 경로
+querydsl {
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+
+//build시 사용할 sourceSet
+sourceSets {
+    main.java.srcDir querydslDir
+}
+
+//querydsl이 compileClassPath를 상속하도록 설정
+configurations {
+    querydsl.extendsFrom compileClasspath
+}
+
+//querydsl 컴파일시 사용할 옵션을 설정
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
 }

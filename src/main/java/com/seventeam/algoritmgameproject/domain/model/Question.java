@@ -3,6 +3,7 @@ package com.seventeam.algoritmgameproject.domain.model;
 import com.seventeam.algoritmgameproject.domain.QuestionLevel;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Question {
 
@@ -22,7 +24,7 @@ public class Question {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false, length = 5000)
     private String question;
 
     @Column(nullable = false, length = 1000)
@@ -55,7 +57,7 @@ public class Question {
     @Column(name = "template",length = 1000)
     private Map<String, String> templates = new HashMap<>();
 
-    @OneToMany(mappedBy = "question")
+    @OneToMany(mappedBy = "question", cascade = CascadeType.PERSIST)
     private List<TestCase> cases = new ArrayList<>();
 
     @Builder
@@ -72,7 +74,8 @@ public class Question {
     }
 
     public void add(TestCase testCase){
-        TestCase.builder().question(this).build();
-        this.add(testCase);
+        testCase.setQuestion(this);
+        getCases().add(testCase);
     }
+
 }

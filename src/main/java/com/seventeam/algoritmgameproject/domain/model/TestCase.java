@@ -1,40 +1,53 @@
 package com.seventeam.algoritmgameproject.domain.model;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
 @Entity
+@ToString
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TestCase {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name="QUESTION_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "QUESTION_ID")
+    @ToString.Exclude
     Question question;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false, length = 5000)
     private String answer;
 
-    @Column(nullable = false, length = 1000)
-    private String params;public long solution(int price, int money, int count) {
-        long answer = money;
+    @Column(nullable = false, length = 5000)
+    private String params;
 
-        for(int i=1; i<=count; i++){
-            answer -= (price*i);
-        }
+    @Column(nullable = false)
+    private String type;
 
-        return answer<0?(answer*-1):0;
-    }
+    @Column(nullable = false)
+    private String ansType;
 
+    @Column(nullable = false)
+    private boolean isExample = false;
     @Builder
-    public TestCase(Question question, String answer, String params) {
+    public TestCase(Question question, String answer, String params, String type, String ansType, boolean isExample) {
         this.question = question;
         this.answer = answer;
         this.params = params;
+        this.type = type;
+        this.ansType = ansType;
+        this.isExample = isExample;
+    }
+
+    public void setQuestion(Question question){
+        this.question = question;
+    }
+
+    public void setExample(){
+        this.isExample = true;
     }
 }

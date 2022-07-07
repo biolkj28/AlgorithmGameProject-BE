@@ -1,4 +1,4 @@
-package com.seventeam.algoritmgameproject;
+package com.seventeam.algoritmgameproject.service.crawlingService;
 
 import com.seventeam.algoritmgameproject.domain.QuestionLevel;
 import lombok.AccessLevel;
@@ -212,10 +212,10 @@ public class ProgrammersTest {
 
     @Test
     @DisplayName("크롤링 코드 리팩토링")
-    public void test(){
+    public void test() {
         List<Question> list = new ArrayList<>();
         QuestionLevel level;
-        for (int i=0; i< QuestionUrl.length;i++) {
+        for (int i = 0; i < QuestionUrl.length; i++) {
             if (i < 4) {
                 level = QuestionLevel.EASY;
             } else if (6 < i) {
@@ -229,6 +229,126 @@ public class ProgrammersTest {
         for (Question question : list) {
             System.out.println(question.toString());
         }
+    }
+
+    @Test
+    @DisplayName("6번 문제 가져오기")
+    public void 육번() {
+        driver = new ChromeDriver(options);
+        driver.get("https://programmers.co.kr/learn/courses/30/lessons/12901");
+        String question1 = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/p[1]")).getText();
+        String question2 = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/p[2]")).getText();
+        System.out.println(question1 + question2);
+        driver.quit();
+    }
+
+    @Test
+    @DisplayName("10번 문제 가져오기")
+    public void 구번() {
+        driver = new ChromeDriver(options);
+        driver.get("https://programmers.co.kr/learn/courses/30/lessons/77484");
+        String title = driver.findElement(By.xpath("//*[@id=\"tab\"]/li")).getText();
+
+        String q1 = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/p[1]")).getText();
+        q1 = q1.substring(0, q1.length()-1);
+        String q2 = "\n<table class=\"table\">\n" +
+                "        <thead><tr>\n" +
+                "<th>순위</th>\n" +
+                "<th>당첨 내용</th>\n" +
+                "</tr>\n" +
+                "</thead>\n" +
+                "        <tbody><tr>\n" +
+                "<td>1</td>\n" +
+                "<td>6개 번호가 모두 일치</td>\n" +
+                "</tr>\n" +
+                "<tr>\n" +
+                "<td>2</td>\n" +
+                "<td>5개 번호가 일치</td>\n" +
+                "</tr>\n" +
+                "<tr>\n" +
+                "<td>3</td>\n" +
+                "<td>4개 번호가 일치</td>\n" +
+                "</tr>\n" +
+                "<tr>\n" +
+                "<td>4</td>\n" +
+                "<td>3개 번호가 일치</td>\n" +
+                "</tr>\n" +
+                "<tr>\n" +
+                "<td>5</td>\n" +
+                "<td>2개 번호가 일치</td>\n" +
+                "</tr>\n" +
+                "<tr>\n" +
+                "<td>6(낙첨)</td>\n" +
+                "<td>그 외</td>\n" +
+                "</tr>\n" +
+                "</tbody>\n" +
+                "      </table>";
+        String q3 = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/p[2]")).getText();
+        String q4 = "<table class=\"table\">\n" +
+                "        <thead><tr>\n" +
+                "<th>당첨 번호</th>\n" +
+                "<th>31</th>\n" +
+                "<th>10</th>\n" +
+                "<th>45</th>\n" +
+                "<th>1</th>\n" +
+                "<th>6</th>\n" +
+                "<th>19</th>\n" +
+                "<th>결과</th>\n" +
+                "</tr>\n" +
+                "</thead>\n" +
+                "        <tbody><tr>\n" +
+                "<td>최고 순위 번호</td>\n" +
+                "<td><u><strong>31</strong></u></td>\n" +
+                "<td>0→<u><strong>10</strong></u></td>\n" +
+                "<td>44</td>\n" +
+                "<td><u><strong>1</strong></u></td>\n" +
+                "<td>0→<u><strong>6</strong></u></td>\n" +
+                "<td>25</td>\n" +
+                "<td>4개 번호 일치, 3등</td>\n" +
+                "</tr>\n" +
+                "<tr>\n" +
+                "<td>최저 순위 번호</td>\n" +
+                "<td><u><strong>31</strong></u></td>\n" +
+                "<td>0→11</td>\n" +
+                "<td>44</td>\n" +
+                "<td><u><strong>1</strong></u></td>\n" +
+                "<td>0→7</td>\n" +
+                "<td>25</td>\n" +
+                "<td>2개 번호 일치, 5등</td>\n" +
+                "</tr>\n" +
+                "</tbody>\n" +
+                "      </table>\n";
+        String q5 = "<ul>\n" +
+                "<li>순서와 상관없이, 구매한 로또에 당첨 번호와 일치하는 번호가 있으면 맞힌 걸로 인정됩니다. </li>\n" +
+                "<li>알아볼 수 없는 두 개의 번호를 각각 10, 6이라고 가정하면 3등에 당첨될 수 있습니다. \n" +
+                "\n" +
+                "<ul>\n" +
+                "<li>3등을 만드는 다른 방법들도 존재합니다. 하지만, 2등 이상으로 만드는 것은 불가능합니다. </li>\n" +
+                "</ul></li>\n" +
+                "<li>알아볼 수 없는 두 개의 번호를 각각 11, 7이라고 가정하면 5등에 당첨될 수 있습니다. \n" +
+                "\n" +
+                "<ul>\n" +
+                "<li>5등을 만드는 다른 방법들도 존재합니다. 하지만, 6등(낙첨)으로 만드는 것은 불가능합니다.</li>\n" +
+                "</ul></li>\n" +
+                "</ul>";
+        String q6 = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/p[3]")).getText();
+        String question =  q1+q2+q3+q4+q5+q6;
+        String limitation = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/ul[2]")).getText();
+        String inOutExHead = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/table[3]/thead")).getText();
+        String inOutEx = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/table[3]/tbody")).getText();
+        String reference = driver.findElement(By.xpath("//*[@id=\"fn1\"]/p")).getText();
+        Question s =Question.builder()
+                .title(title)
+                .questionDescription(question)
+                .limitation(limitation)
+                .inOutExHead(inOutExHead)
+                .inOutEx(inOutEx)
+                .inOutExDescription("No Info")
+                .reference(reference)
+                .build();
+        System.out.println(s);
+        //System.out.println(driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/ul[2]")).getText());
+        driver.quit();
     }
 
     public Question uploadQuestion(String questionUrl, QuestionLevel level) {
@@ -355,5 +475,6 @@ class Question {
         this.reference = reference;
         this.level = level;
         this.templates = templates;
+
     }
 }

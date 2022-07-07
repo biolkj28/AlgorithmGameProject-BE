@@ -1,4 +1,4 @@
-package com.seventeam.algoritmgameproject.web.service;
+package com.seventeam.algoritmgameproject.web.service.crawlingService;
 
 import com.seventeam.algoritmgameproject.domain.QuestionLevel;
 import com.seventeam.algoritmgameproject.domain.model.Question;

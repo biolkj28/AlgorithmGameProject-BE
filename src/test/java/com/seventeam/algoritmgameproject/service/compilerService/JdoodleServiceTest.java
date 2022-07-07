@@ -1,5 +1,9 @@
-package com.seventeam.algoritmgameproject;
+package com.seventeam.algoritmgameproject.service.compilerService;
 
+import com.seventeam.algoritmgameproject.service.compilerService.generatedTemplate.QuestionStrToJS;
+import com.seventeam.algoritmgameproject.service.compilerService.generatedTemplate.QuestionStrToPython;
+import com.seventeam.algoritmgameproject.service.compilerService.generatedTemplate.QuestionsStr;
+import com.seventeam.algoritmgameproject.service.crawlingService.Solution;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -88,36 +92,61 @@ public class JdoodleServiceTest {
                 "    answer = 'Hello Python'\n" +
                 "    return answer\n";
         StringBuffer buffer = new StringBuffer(tmp);
-        buffer.append("print(solution(");
-        buffer.append(params);
-        buffer.append("))");
-        System.out.println(buffer);
+        int start = buffer.indexOf("f");
+        int end = buffer.indexOf("(");
+        String substring = buffer.substring(start+1, end).trim();
+//        buffer.append("print(solution(");
+//        buffer.append(params);
+//        buffer.append("))");
+        System.out.println(substring);
+        //System.out.println(buffer);
 
     }
 
+
     @Test
-    @DisplayName("자바스크립트")
+    @DisplayName("자바스크립트 console.log 제거")
     void lastcheckJS() {
-        String params = "1";
-        String tmp = "function solution(v) {\n" +
-                "    var answer = 'Hello Javascript';\n" +
-                "    return answer;\n" +
-                "}";
-        StringBuffer buffer = new StringBuffer(tmp);
-        buffer.append("console.log(solution(");
-        buffer.append(params);
-        buffer.append("))");
-        System.out.println(buffer);
-
+        String code1 = QuestionStrToJS.code1;
+        if(code1.contains("console.log")){
+            System.out.println("출력문을 작성하지 마세요!");
+        }
+        int i = code1.lastIndexOf("console.log(");
+        StringBuilder str = new StringBuilder(code1);
+        int start = str.indexOf("}")+1;
+        str.delete(start, str.length());
+        System.out.println(str);
     }
 
     @Test
-    @DisplayName("testcase 답안")
-    public String solution(String s) {
-        int len = s.length();
-        int idx = len / 2;
-        return ((len & 1) == 1)?String.valueOf(s.charAt(idx)):s.substring(idx - 1, idx + 1);
+    @DisplayName("자바 메인 메소드 제거")
+    void deleteMain(){
 
+        String code2 = QuestionsStr.code2;
+        if(code2.contains("main")){
+            System.out.println("출력문을 작성하지 마세요!");
+        }
+//        int start = code2.lastIndexOf("public static void main(String[] args)");
+//        StringBuilder str = new StringBuilder(code2);
+//
+//        str.delete(start, str.length()-1);
+//        System.out.println(str);
+    }
+
+    @Test
+    @DisplayName("파이썬 print 제거")
+    void deletePrint(){
+        String code2 = QuestionStrToPython.code9;
+        if(code2.contains("print")){
+            System.out.println("출력문을 작성하지 마세요!");
+        }
+//
+//        int start = code2.lastIndexOf("return");
+//        int end = code2.indexOf("print");
+//        StringBuilder str = new StringBuilder(code2);
+//
+//        str.delete(start, str.length()-1);
+//        System.out.println(str);
     }
 
 
