@@ -11,7 +11,7 @@ public class QuestionStrToJS {
             "  return s.replace(/\\d(?=\\d{4})/g, \"*\");\n" +
             "}\n";
     public static final String code4 ="function solution(x, n) {\n" +
-            "    return Array(n).fill(x).map((v, i) => (i + 1) * v)\n" +
+            "    return Array(n).fill(y).map((v, i) => (i + 1) * v)\n" +
             "}\n";
     public static final String code5 = "function solution(price, money, count) {\n" +
             "    const tmp = price * count * (count + 1) / 2 - money;\n" +

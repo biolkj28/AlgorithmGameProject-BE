@@ -1,7 +1,6 @@
 package com.seventeam.algoritmgameproject.web.service.compilerService.generatedTemplate;
 
 import com.seventeam.algoritmgameproject.domain.model.TestCase;
-import com.seventeam.algoritmgameproject.domain.repository.TestCaseDslRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -16,18 +15,23 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class GeneratedJavaTemplateImp implements GeneratedTemplate {
-    private final TestCaseDslRepository repository;
 
     @Override
-    public String compileCode(String codeStr, Long id) {
+    public String compileCode(String codeStr,List<TestCase> testCases) {
 
         if(codeStr.contains("main")){
             throw new IllegalArgumentException("출력문을 작성하지 마세요!");
         }
-
+        //클래스명 변경
+        if (!codeStr.contains("Solution")) {
+            int start = codeStr.indexOf("s");
+            int end = codeStr.indexOf("{");
+            String methodName = codeStr.substring(start + 2, end).trim();
+            codeStr = codeStr.replace(methodName, "Solution");
+        }
         int i = codeStr.lastIndexOf('}');
+
         StringBuilder buffer = new StringBuilder(codeStr).deleteCharAt(i);
-        List<TestCase> testCases = repository.getTestCases(id);
         String ansType = testCases.get(0).getAnsType();
 
         if (ansType.contains("[]") && !codeStr.contains("import java.util.Arrays;")) {
@@ -165,7 +169,7 @@ public class GeneratedJavaTemplateImp implements GeneratedTemplate {
                     out.append(varList.get(i)).append(",");
                 }
             }
-            out.append(")));\n");
+            out.append("))+\"_\");");
         } else {
             out.append("System.out.println(s.solution(");
             for (int i = 0; i < varList.size(); i++) {
@@ -175,7 +179,7 @@ public class GeneratedJavaTemplateImp implements GeneratedTemplate {
                     out.append(varList.get(i)).append(",");
                 }
             }
-            out.append("));\n");
+            out.append(")+\"_\");");
         }
     }
 }

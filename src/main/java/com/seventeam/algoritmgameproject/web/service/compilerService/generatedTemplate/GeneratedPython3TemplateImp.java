@@ -1,26 +1,26 @@
 package com.seventeam.algoritmgameproject.web.service.compilerService.generatedTemplate;
 
 import com.seventeam.algoritmgameproject.domain.model.TestCase;
-import com.seventeam.algoritmgameproject.domain.repository.TestCaseDslRepository;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class GeneratedPython3TemplateImp implements GeneratedTemplate {
 
-    private final TestCaseDslRepository repository;
     private final GeneratedTemplateUtil loop;
 
     @Override
-    public String compileCode(String codeStr, Long id) {
+    public String compileCode(String codeStr, List<TestCase> testCases) {
 
-        if(codeStr.contains("print")){
+        if (codeStr.contains("print")) {
             throw new IllegalArgumentException("출력문을 작성하지 마세요!");
         }
 
@@ -31,8 +31,10 @@ public class GeneratedPython3TemplateImp implements GeneratedTemplate {
             String methodName = codeStr.substring(start + 1, end).trim();
             codeStr = codeStr.replace(methodName, "solution");
         }
-        StringBuilder buffer = new StringBuilder(codeStr);
-        List<TestCase> testCases = repository.getTestCases(id);
+
+        StringBuilder buffer;
+        buffer = new StringBuilder(codeStr);
+
         buffer.append("\n");
         buffer.append(addTestCode(testCases));
         return buffer.toString();
@@ -144,8 +146,8 @@ public class GeneratedPython3TemplateImp implements GeneratedTemplate {
     public void generatedOut(StringBuilder out, List<String> varList, String ansType) {
 
         out.append("print(solution(");
-        loop.variableLoop(out,varList);
-        out.append("));\n");
+        loop.variableLoop(out, varList);
+        out.append("),\"_\");\n");
 
     }
 }

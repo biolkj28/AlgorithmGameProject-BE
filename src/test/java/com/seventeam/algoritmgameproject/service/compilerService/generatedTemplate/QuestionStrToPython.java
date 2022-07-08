@@ -17,10 +17,9 @@ public class QuestionStrToPython {
             "    return result";
     public static final String code3 = "def hide_numbers(s):\n" +
             "    return \"*\"*(len(s)-4) + s[-4:]";
-    public static final String code4 = "def number_generator(x, n):\n" +
+    public static final String code4 = "def number_generator(y, n):\n" +
             "    # 함수를 완성하세요\n" +
-            "    return [i * x + x for i in range(n)]\n" +
-            "print(number_generator(2, 5))";
+            "    return [i * x + x for i in range(n)]\n";
     public static final String code5 = "def solution(price, money, count):\n" +
             "    return max(0,price*(count+1)*count//2-money)";
     public static final String code6 = "def getDayName(a,b):\n" +

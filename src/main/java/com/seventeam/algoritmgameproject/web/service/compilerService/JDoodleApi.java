@@ -6,18 +6,18 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
+@Component
 @Slf4j
-public class OnlineCompilerService {
+public class JDoodleApi {
 
-    public String compile(String codeStr,Language language) {
+    public JSONObject compile(String codeStr,Language language) {
         String url = "https://api.jdoodle.com/v1/execute";
         String clientId = "586fb20a7ae6a3c3aae8f290321d36f1"; //Replace with your client ID
         String clientSecret = "e8d153f387750de0adf43b141c4fa0353d6c040a47b8d41a3f3fbc19d836949e"; //Replace with your client Secret
@@ -49,16 +49,6 @@ public class OnlineCompilerService {
             log.info(e.getMessage(),"JDoodle Error: ");
 
         }
-        return res != null ? res.toJSONString() : "No info";
-    }
-
-    public String generatedCompletedJavaCode(String codeStr){
-        return null;
-    }
-    public String generatedCompletedPython3Code(String codeStr){
-        return null;
-    }
-    public String generatedCompletedJavascriptCode(String codeStr){
-        return null;
+        return res;
     }
 }

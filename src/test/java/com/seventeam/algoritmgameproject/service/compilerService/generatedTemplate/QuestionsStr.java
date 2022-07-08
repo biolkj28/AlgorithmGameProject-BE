@@ -26,9 +26,7 @@ public class QuestionsStr {
             "        answer = (sign?1:-1)*result;\n" +
             "        return answer;\n" +
             "    }\n" +
-            "public static void main(String[] args) {\n" +
-            "        \n" +
-            "    }}";
+            "}";
     static final String code3 = "public class Soln {\n" +
             "    public String solution(String phone_number) {\n" +
             "         char[] ch = phone_number.toCharArray();\n" +
@@ -38,8 +36,8 @@ public class QuestionsStr {
             "        return String.valueOf(ch);\n" +
             "    }\n" +
             "}";
-    static final String code4 = " public class Solution {\n" +
-            "    public long[] solution(int x, int n) {\n" +
+    public static final String code4 = " public class Solution {\n" +
+            "    public long[] solution(int y, int n) {\n" +
             "        long[] answer = new long[n];\n" +
             "        int multiple = 1;\n" +
             "        for (int i=0; i<n; i++){\n" +
@@ -49,7 +47,7 @@ public class QuestionsStr {
             "        return answer;\n" +
             "    }\n" +
             "}";
-    static final String code5 = "public class Solution {\n" +
+    public static final String code5 = "public class Solution {\n" +
             "    public long solution(int price, int money, int count) {\n" +
             "        long answer = money;\n" +
             "        \n" +
