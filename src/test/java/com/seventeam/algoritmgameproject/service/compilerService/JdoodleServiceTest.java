@@ -1,5 +1,6 @@
 package com.seventeam.algoritmgameproject.service.compilerService;
 
+import com.seventeam.algoritmgameproject.domain.QuestionLevel;
 import com.seventeam.algoritmgameproject.service.compilerService.generatedTemplate.QuestionStrToJS;
 import com.seventeam.algoritmgameproject.service.compilerService.generatedTemplate.QuestionStrToPython;
 import com.seventeam.algoritmgameproject.service.compilerService.generatedTemplate.QuestionsStr;
@@ -148,6 +149,11 @@ public class JdoodleServiceTest {
 //        str.delete(start, str.length()-1);
 //        System.out.println(str);
     }
-
+    @Test
+    @DisplayName("암거나")
+    void del(){
+        String s = QuestionLevel.EASY.toString();
+        System.out.println(s);
+    }
 
 }

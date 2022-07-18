@@ -3,7 +3,9 @@ package com.seventeam.algoritmgameproject.web.service.compilerService.generatedT
 import com.seventeam.algoritmgameproject.domain.model.TestCase;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.ArrayList;
@@ -16,9 +18,10 @@ import java.util.List;
 public class GeneratedPython3TemplateImp implements GeneratedTemplate {
 
     private final GeneratedTemplateUtil loop;
-
+    private final RedisTemplate<String, String> redisTemplate;
     @Override
-    public String compileCode(String codeStr, List<TestCase> testCases) {
+    @Transactional
+    public String compileCode(String codeStr, List<TestCase> testCases,Long questionId) {
 
         if (codeStr.contains("print")) {
             throw new IllegalArgumentException("출력문을 작성하지 마세요!");
@@ -36,7 +39,13 @@ public class GeneratedPython3TemplateImp implements GeneratedTemplate {
         buffer = new StringBuilder(codeStr);
 
         buffer.append("\n");
-        buffer.append(addTestCode(testCases));
+
+        if(Boolean.TRUE.equals(redisTemplate.hasKey("pythonTemplate" + questionId))){
+            buffer.append(redisTemplate.opsForValue().get("pythonTemplate"+questionId));
+        }else{
+            redisTemplate.opsForValue().set("pythonTemplate"+questionId, addTestCode(testCases));
+            buffer.append(addTestCode(testCases));
+        }
         return buffer.toString();
     }
 

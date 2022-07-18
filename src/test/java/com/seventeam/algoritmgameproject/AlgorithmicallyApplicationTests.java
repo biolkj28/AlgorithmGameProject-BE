@@ -10,13 +10,8 @@ import java.util.Map;
 @SpringBootTest
 class AlgorithmicallyApplicationTests {
 
-    @Autowired
-    Map<String, GeneratedTemplate> map;
-    @Test
-    void contextLoads() {
-        for (String s : map.keySet()) {
-            System.out.println(s);
-        }
-    }
+//    @Test
+//    void contextLoads() {
+//    }
 
 }

@@ -3,7 +3,9 @@ package com.seventeam.algoritmgameproject.web.service.compilerService.generatedT
 import com.seventeam.algoritmgameproject.domain.model.TestCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,9 +17,10 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class GeneratedJavaTemplateImp implements GeneratedTemplate {
-
+    private final RedisTemplate<String,String> redisTemplate;
     @Override
-    public String compileCode(String codeStr,List<TestCase> testCases) {
+    @Transactional
+    public String compileCode(String codeStr,List<TestCase> testCases,Long questionId) {
 
         if(codeStr.contains("main")){
             throw new IllegalArgumentException("출력문을 작성하지 마세요!");
@@ -34,11 +37,17 @@ public class GeneratedJavaTemplateImp implements GeneratedTemplate {
         StringBuilder buffer = new StringBuilder(codeStr).deleteCharAt(i);
         String ansType = testCases.get(0).getAnsType();
 
-        if (ansType.contains("[]") && !codeStr.contains("import java.util.Arrays;")) {
+
+        if ((ansType != null && ansType.contains("[]")) && !codeStr.contains("java.util.Arrays;")) {
             buffer.insert(0, "import java.util.Arrays;");
         }
 
-        buffer.append(addTestCode(testCases));
+        if(Boolean.TRUE.equals(redisTemplate.hasKey("javaTemplate" + questionId))){
+            buffer.append(redisTemplate.opsForValue().get("javaTemplate"+questionId));
+        }else{
+            redisTemplate.opsForValue().set("javaTemplate"+questionId, addTestCode(testCases));
+            buffer.append(addTestCode(testCases));
+        }
         return buffer.toString();
     }
 

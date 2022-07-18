@@ -140,7 +140,7 @@ public class GeneratedJavascriptTemplateImpTest {
     // ex) System.out.println(Arrays.toString(s.solution(a,b)) 문자열 생성
     private void generatedOutJS(StringBuilder out, List<String> varList) {
 
-            out.append("console.log(solution(");
+            out.append("solution(");
             for (int i = 0; i < varList.size(); i++) {
                 if (i == varList.size() - 1) {
                     out.append(varList.get(i));
@@ -148,7 +148,7 @@ public class GeneratedJavascriptTemplateImpTest {
                     out.append(varList.get(i)).append(",");
                 }
             }
-            out.append("));\n");
+            out.append(");\n");
 
     }
 }

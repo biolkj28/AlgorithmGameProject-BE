@@ -27,7 +27,7 @@ public class QuestionsStr {
             "        return answer;\n" +
             "    }\n" +
             "}";
-    static final String code3 = "public class Soln {\n" +
+    public static final String code3 = "public class Soln {\n" +
             "    public String solution(String phone_number) {\n" +
             "         char[] ch = phone_number.toCharArray();\n" +
             "        for(int i = 0; i < ch.length - 4; i ++){\n" +

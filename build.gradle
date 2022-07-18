@@ -49,12 +49,38 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.18.12'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
 
-    //sweager3
-    implementation 'io.springfox:springfox-boot-starter:3.0.0'
-    implementation 'io.springfox:springfox-swagger-ui:3.0.0'
-
     //redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    //ui
+    implementation 'org.springframework.boot:spring-boot-starter-freemarker'
+    implementation 'org.webjars.bower:bootstrap:4.3.1'
+    implementation 'org.webjars.bower:vue:2.5.16'
+    implementation 'org.webjars.bower:axios:0.17.1'
+    implementation 'org.webjars:sockjs-client:1.1.2'
+    implementation 'org.webjars:stomp-websocket:2.3.3-1'
+    implementation 'com.google.code.gson:gson:2.8.0'
+    //websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-devtools'
+    implementation 'org.webjars:sockjs-client:1.1.2'
+
+
+    //swagger
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
+   // implementation 'org.springdoc:springdoc-openapi-security:1.6.9'
+
+    //js 컴파일러
+    // https://mvnrepository.com/artifact/org.graalvm.js/js
+//    implementation 'org.graalvm.js:js:21.1.0'
+
+    //python 컴파일러
+    // https://mvnrepository.com/artifact/org.python/jython-standalone
+//    implementation 'org.python:jython-standalone:2.7.1'
+
+
+
+
 }
 
 tasks.named('test') {

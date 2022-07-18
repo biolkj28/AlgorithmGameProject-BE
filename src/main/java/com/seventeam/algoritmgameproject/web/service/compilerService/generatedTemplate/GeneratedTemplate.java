@@ -5,7 +5,7 @@ import com.seventeam.algoritmgameproject.domain.model.TestCase;
 import java.util.List;
 
 public interface GeneratedTemplate {
-    String compileCode(String codeStr, List<TestCase> testCases);
+    String compileCode(String codeStr, List<TestCase> testCases,Long questionId);
 
     // 메인 메소드 추가, 변수 추가, 출력문 추가
     String addTestCode(List<TestCase> testCases);

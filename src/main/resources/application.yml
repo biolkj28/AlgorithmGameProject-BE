@@ -1,0 +1,65 @@
+#공통 설정
+server:
+  port: 8080
+  tomcat:
+    uri-encoding: utf-8
+
+#jpa setting
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+
+  h2:
+    console:
+      settings:
+        web-allow-others: true
+      enabled: true
+
+  profiles:
+    active: EC2
+---
+#profiles
+spring:
+  redis:
+    host: 127.0.0.1
+    port: 6379
+
+  config:
+    activate:
+      on-profile: "testDB"
+  datasource:
+    url: jdbc:h2:file:C:/data/testDB
+    username: sa
+    password:
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "EC2"
+  datasource:
+    url: jdbc:h2:file:/home/ubuntu/data/testDB
+    username: sa
+    password:
+
+---
+#swagger setting
+spring:
+  mvc:
+    path match:
+      matching-strategy: ant_path_matcher
+
+
+---
+#freemarker
+spring:
+  freemarker:
+    template-loader-path: classpath:/templates
+    suffix: .ftl
