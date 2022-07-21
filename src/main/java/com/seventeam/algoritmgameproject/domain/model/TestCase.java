@@ -1,5 +1,6 @@
 package com.seventeam.algoritmgameproject.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -16,6 +17,7 @@ public class TestCase {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "QUESTION_ID")
+    @JsonManagedReference(value = "question-TestCase")
     @ToString.Exclude
     Question question;
 
@@ -34,7 +36,7 @@ public class TestCase {
     @Column(nullable = false)
     private boolean isExample = false;
     @Builder
-    public TestCase(Question question, String answer, String params, String type, String ansType, boolean isExample) {
+    private TestCase(Question question, String answer, String params, String type, String ansType, boolean isExample) {
         this.question = question;
         this.answer = answer;
         this.params = params;

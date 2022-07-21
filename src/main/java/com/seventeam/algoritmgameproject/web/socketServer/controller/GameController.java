@@ -6,7 +6,6 @@ import com.seventeam.algoritmgameproject.web.socketServer.model.ReadyMessage;
 import com.seventeam.algoritmgameproject.web.socketServer.service.GameService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
@@ -19,9 +18,8 @@ public class GameController {
 
     //특정 유저로 수정
     @MessageMapping("/game/codeMessage")
-    public void getCodeMessage(GameMessage message, @Header("simpSessionId") String sessionId) {
-      service.sendGameCode(message,sessionId);
-
+    public void getCodeMessage(GameMessage message) {
+      service.sendGameCode(message);
     }
 
     @MessageMapping("/game/ready")

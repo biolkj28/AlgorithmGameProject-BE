@@ -1,10 +1,8 @@
 package com.seventeam.algoritmgameproject.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.seventeam.algoritmgameproject.domain.QuestionLevel;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -14,6 +12,7 @@ import java.util.Map;
 
 @Entity
 @Getter
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Question {
 
@@ -55,13 +54,20 @@ public class Question {
     )
     @MapKeyColumn
     @Column(name = "template",length = 1000)
+    @JsonBackReference
     private Map<String, String> templates = new HashMap<>();
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.PERSIST)
+    @ToString.Exclude
+    @JsonBackReference(value = "question-TestCase")
     private List<TestCase> cases = new ArrayList<>();
 
+    public void setCases(List<TestCase> cases) {
+        this.cases = cases;
+    }
+
     @Builder
-    public Question(String title, String question, String limitation, String inOutExHead, String inOutEx, String inOutExDescription, String reference, QuestionLevel level, Map<String, String> templates) {
+    private Question(String title, String question, String limitation, String inOutExHead, String inOutEx, String inOutExDescription, String reference, QuestionLevel level, Map<String, String> templates) {
         this.title = title;
         this.question = question;
         this.limitation = limitation;

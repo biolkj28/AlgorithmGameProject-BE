@@ -57,7 +57,7 @@
                     // prevent html, allow json array
                     if (Object.prototype.toString.call(response.data) === "[object Array]")
                         this.chatrooms = response.data;
-                        console.log(response.data)
+                    console.log(response.data)
                 });
             },
 
@@ -84,10 +84,8 @@
             },
             enterRoom: function (roomId, server) {
                 axios.post('/game/room/enter', {
-                    params: {
-                        server: server,
-                        roomId: roomId
-                    }
+                    server: server,
+                    roomId: roomId
                 }).then(response => {
 
                     localStorage.setItem('wschat.roomId', roomId);

@@ -1,16 +1,23 @@
 package com.seventeam.algoritmgameproject.web.service.compilerService;
 
 import com.seventeam.algoritmgameproject.domain.model.TestCase;
+import com.seventeam.algoritmgameproject.domain.model.User;
 import com.seventeam.algoritmgameproject.domain.repository.TestCaseDslRepository;
+import com.seventeam.algoritmgameproject.security.repository.UserRepository;
+import com.seventeam.algoritmgameproject.web.dto.CompileRequestDto;
 import com.seventeam.algoritmgameproject.web.dto.CompileResultDto;
 import com.seventeam.algoritmgameproject.web.service.compilerService.generatedTemplate.GeneratedTemplate;
+import com.seventeam.algoritmgameproject.web.socketServer.repository.GameSessionRepository;
+import com.seventeam.algoritmgameproject.web.socketServer.service.GameService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
@@ -19,12 +26,25 @@ public class CompilerService {
     private final Map<String, GeneratedTemplate> templateMap;
     private final TestCaseDslRepository repository;
     private final JDoodleApi jDoodleApi;
+    private final GameService service;
+    private static final Map<String, Boolean> compileRequestMap = new ConcurrentHashMap<>();;
+    private final UserRepository userRepository;
+    private final GameSessionRepository sessionRepository;
 
-    public CompileResultDto compileResult(Long questionId, int langIdx, String codeStr) {
+
+    public CompileResultDto compileResult(CompileRequestDto dto, User user) {
+        if (!compileRequestMap.containsKey(dto.getRoomId())) {
+            compileRequestMap.put(dto.getRoomId(), true);
+        } else {
+            return CompileResultDto.builder()
+                    .msg("상대 사용자가 컴파일 중입니다.")
+                    .result(false)
+                    .build();
+        }
 
         GeneratedTemplate template = null;
         Language language = null;
-        switch (langIdx) {
+        switch (dto.getLanguageIdx()) {
             case 0: {
                 template = templateMap.get("generatedJavaTemplateImp");
                 language = Language.JAVA;
@@ -42,73 +62,116 @@ public class CompilerService {
             }
         }
 
-        List<TestCase> testCases = repository.getTestCases(questionId);
+        List<TestCase> testCases = repository.getTestCases(dto.getQuestionId());
         if (template == null) {
             throw new RuntimeException("해당 언어는 지원하지 않습니다");
         }
-        JSONObject compile = jDoodleApi.compile(template.compileCode(codeStr, testCases, questionId), language);
+        JSONObject compile = jDoodleApi.compile(template.compileCode(dto.getCodeStr(), testCases, dto.getQuestionId()), language);
         String output = compile.get("output").toString();
         log.info(output);
 
-        if (
-                output.contains("error") ||
-                        output.contains("ReferenceError") ||
-                        output.contains("Traceback")
-        ) {
-            int len = output.length();
-            StringBuilder out = new StringBuilder(output);
+        if (output.contains("error") || output.contains("ReferenceError") || output.contains("Traceback")) {
 
-            out.deleteCharAt(0);
-            out.deleteCharAt(len - 2);
-            output = out.toString();
+            return errorResult(output, dto, user);
 
-            String[] split = output.split("\n");
-            StringBuilder errorMsg = new StringBuilder(50);
-            for (String s : split) {
-                s = s
-                        .replace(" ", "&#32;")
-                        .replace("/", "&#47;")
-                        .replace("^", "");
-
-                errorMsg.append(s.trim());
-                errorMsg.append("<br>");
-            }
-
-            return CompileResultDto.builder()
-                    .msg(errorMsg.toString())
-                    .result(false)
-                    .build();
         } else if (output.contains("No \"public class\" found to execute")) {
-            return CompileResultDto.builder()
-                    .msg("No \"public class\" found to execute")
-                    .result(false)
-                    .build();
+
+            return publicClassErrorResult(dto, user);
+
         } else {
-            String[] ans = output.replace("\n", "").split("_");
-            int cnt = 0;
-            boolean resultBool = true;
-            //테스트케이스의 개수로 퍼센트지 계산을 위한 변수
-            int divide = (100 / testCases.size());
-            for (int i = 0; i < ans.length; i++) {
-                String answer = testCases.get(i).getAnswer().replaceAll("\\p{Z}", "");
-                StringBuilder result = new StringBuilder(ans[i].replaceAll("\\p{Z}", ""));
 
-                if (0 < answer.indexOf("[") && !language.equals(Language.JAVA)) {
-                    result.insert(0, "[");
-                    result.append("]");
-                }
-
-                if (answer.equals(result.toString())) {
-                    cnt += divide;
-                }
-            }
-            if (cnt != 100) {
-                resultBool = false;
-            }
-            return CompileResultDto.builder()
-                    .msg("정확도: " + cnt + "%")
-                    .result(resultBool)
-                    .build();
+            return compileCheckResult(output, testCases, language, dto, user);
         }
     }
+
+    public CompileResultDto compileCheckResult(String output, List<TestCase> testCases, Language language, CompileRequestDto dto, User user) {
+        String[] ans = output.replace("\n", "").split("_");
+        int cnt = 0;
+        boolean resultBool = true;
+        //테스트케이스의 개수로 퍼센트지 계산을 위한 변수
+        int divide = (100 / testCases.size());
+        for (int i = 0; i < ans.length; i++) {
+            String answer = testCases.get(i).getAnswer().replaceAll("\\p{Z}", "");
+            StringBuilder result = new StringBuilder(ans[i].replaceAll("\\p{Z}", ""));
+
+            if (0 < answer.indexOf("[") && !language.equals(Language.JAVA)) {
+                result.insert(0, "[");
+                result.append("]");
+            }
+
+            if (answer.equals(result.toString())) {
+                cnt += divide;
+            }
+        }
+        if (cnt < 100) {
+            resultBool = false;
+            service.sendOpFailMessage(dto.getRoomId(), user.getUserId());
+        } else {
+            winProcess(user);
+            service.sendLoseMessage(dto.getRoomId(), user.getUserId());
+            loseProcess(dto.getRoomId(), user);
+        }
+        //컴파일 동시성 문제 방지
+        compileRequestMap.remove(dto.getRoomId());
+        return CompileResultDto.builder()
+                .msg("승리")
+                .result(resultBool)
+                .build();
+
+    }
+
+    public CompileResultDto errorResult(String output, CompileRequestDto dto, User user) {
+
+        int len = output.length();
+        StringBuilder out = new StringBuilder(output);
+        out.deleteCharAt(0);
+        out.deleteCharAt(len - 2);
+        output = out.toString();
+
+        String[] split = output.split("\n");
+        StringBuilder errorMsg = new StringBuilder(50);
+
+        for (String s : split) {
+            s = s
+                    .replace(" ", "&#32;")
+                    .replace("/", "&#47;")
+                    .replace("^", "");
+
+            errorMsg.append(s.trim());
+            errorMsg.append("<br>");
+        }
+
+        compileRequestMap.remove(dto.getRoomId());
+        service.sendOpFailMessage(dto.getRoomId(), user.getUserId());
+
+        return CompileResultDto.builder()
+                .msg(errorMsg.toString())
+                .result(false)
+                .build();
+    }
+
+    public CompileResultDto publicClassErrorResult(CompileRequestDto dto, User user) {
+        compileRequestMap.remove(dto.getRoomId());
+        service.sendOpFailMessage(dto.getRoomId(), user.getUserId());
+        return CompileResultDto.builder()
+                .msg("No \"public class\" found to execute")
+                .result(false)
+                .build();
+    }
+
+    @Transactional
+    public void winProcess(User user) {
+        User winUser = userRepository.findByUserId(user.getUserId()).orElseThrow(() -> new NullPointerException("없는 유저 입니다."));
+        winUser.win();
+        userRepository.save(winUser);
+    }
+
+    @Transactional
+    public void loseProcess(String roomId, User user) {
+        String othersSession = sessionRepository.findOthersSession(roomId, user.getUserId());
+        User loseUser = userRepository.findByUserId(othersSession).orElseThrow(() -> new NullPointerException("없는 유저 입니다."));
+        loseUser.win();
+        userRepository.save(loseUser);
+    }
+
 }

@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CompileRequestDto {
 
+    @Schema(type = "String",description = "roomID")
+    private String roomId;
     @Schema(type = "long",example = "1")
     private long questionId;
     @Schema(type = "int",example = "0",description = "0:JAVA, 1:JS, 2:PYTHON3")
@@ -15,7 +17,8 @@ public class CompileRequestDto {
     @Schema(type = "String",example = "def solution(){}")
     private String codeStr;
 
-    public CompileRequestDto(long questionId, int languageIdx, String codeStr) {
+    public CompileRequestDto(String roomId, long questionId, int languageIdx, String codeStr) {
+        this.roomId = roomId;
         this.questionId = questionId;
         this.languageIdx = languageIdx;
         this.codeStr = codeStr;

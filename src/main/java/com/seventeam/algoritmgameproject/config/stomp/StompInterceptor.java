@@ -1,6 +1,5 @@
 package com.seventeam.algoritmgameproject.config.stomp;
 
-import com.seventeam.algoritmgameproject.web.socketServer.repository.GameRoomRepository;
 import com.seventeam.algoritmgameproject.web.socketServer.service.GameService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,27 +17,27 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class StompInterceptor implements ChannelInterceptor {
-    private final GameRoomRepository repository;
+
+    private final GameService service;
+
+
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        String sessionId = accessor.getSessionId();
         String destination = Optional.ofNullable(accessor.getDestination()).orElse("notFoundRoomId");
         String roomId = getRoomId(destination);
+        String username = Objects.requireNonNull(message.getHeaders().get("simpUser")).toString();
 
         if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
-            if (destination.contains("/topic/game/room/")) {
-
-                String connectionCode = Objects.requireNonNull(message.getHeaders().get("simpUser")).toString();
-                log.info("Connect SessionId: {}", sessionId);
-                log.info("ConnectionCode:{}", connectionCode);
-                //세션 저장 및 연결 코드 발급, 추후 로그인 시 jwt 확인 파싱, sessionId -> userid 로 키값저장
-                repository.saveEnterSession(roomId,sessionId,connectionCode);
+            //유저 정보 전송 , 구독 주소 변경
+            if (service.isParticipant(roomId,username)) {
+                log.info("Connect User: {}", username);
+                service.sendToMyUserInfo(roomId, username);
             }
 
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) {
-            log.info("Disconnect SessionId: {}", sessionId);
-            repository.deleteEnterSession(sessionId);
+            log.info("Disconnect username: {}", username);
+            service.disconnectEvent(roomId,username);
         }
         return message;
     }

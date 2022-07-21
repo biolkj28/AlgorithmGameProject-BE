@@ -48,6 +48,9 @@ spring:
     url: jdbc:h2:file:/home/ubuntu/data/testDB
     username: sa
     password:
+---
+#jwt
+
 
 ---
 #swagger setting

@@ -1,4 +1,4 @@
-package com.seventeam.algoritmgameproject.web.socketServer.Dto;
+package com.seventeam.algoritmgameproject.web.socketServer.model.Dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

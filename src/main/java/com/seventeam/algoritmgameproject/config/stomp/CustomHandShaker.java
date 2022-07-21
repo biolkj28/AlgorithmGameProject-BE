@@ -8,14 +8,15 @@ import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
 import java.security.Principal;
 import java.util.Map;
-import java.util.UUID;
 @Slf4j
 public class CustomHandShaker extends DefaultHandshakeHandler {
     // connection header
     @Override
     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        final String randomId = UUID.randomUUID().toString();
-        log.info("User with ID '{}' opened the page", randomId);
-        return new UserPrincipal(randomId);
+        // 이건 추후 통일
+        String uri = request.getURI().toString();
+        final String username  = uri.split("=")[1];
+        log.info("User with ID '{}' opened the page", username);
+        return new UserPrincipal(username);
     }
 }

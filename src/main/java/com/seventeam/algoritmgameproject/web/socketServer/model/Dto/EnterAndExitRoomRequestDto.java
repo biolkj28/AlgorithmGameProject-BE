@@ -1,4 +1,4 @@
-package com.seventeam.algoritmgameproject.web.socketServer.Dto;
+package com.seventeam.algoritmgameproject.web.socketServer.model.Dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -8,13 +8,13 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor
 @ToString
-public class EnterRoomRequestDto {
+public class EnterAndExitRoomRequestDto {
     @Schema(type = "String", example = "esg-sgdsg-egs",description = "방 생성시 발급한 UUID")
     private String roomId;
     @Schema(type = "String", example = "JAVAEASY",description = "방 생성시 발급한 서버이름")
     private String server;
 
-    public EnterRoomRequestDto(String roomId, String server) {
+    public EnterAndExitRoomRequestDto(String roomId, String server) {
         this.roomId = roomId;
         this.server = server;
     }

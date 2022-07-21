@@ -1,6 +1,5 @@
 package com.seventeam.algoritmgameproject.web.socketServer.model;
 
-import com.seventeam.algoritmgameproject.web.dto.UserGameInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -62,6 +61,11 @@ public class GameRoom implements Serializable {
         this.isEnter = true;
     }
     public void questionBlock(){
-        this.question = "Block";
+        this.questionTitle = "";
+        this.question = "";
+    }
+
+    public void changeCreator(UserGameInfo userGameInfo){
+        this.creatorGameInfo = userGameInfo;
     }
 }
