@@ -14,6 +14,6 @@ public class QuestionInit implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        service.saveDefaultQuestions();
+        //service.saveDefaultQuestions();
     }
 }
