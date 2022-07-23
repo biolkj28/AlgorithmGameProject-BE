@@ -70,3 +70,15 @@ spring:
   freemarker:
     template-loader-path: classpath:/templates
     suffix: .ftl
+---
+#logging
+logging:
+  file:
+    path: ./log
+---
+#Spring admin
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

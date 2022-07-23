@@ -75,6 +75,8 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
     implementation 'org.springdoc:springdoc-openapi-security:1.6.9'
 
+    //Spring admin
+    implementation 'de.codecentric:spring-boot-admin-starter-server:2.7.2'
     //js 컴파일러
     // https://mvnrepository.com/artifact/org.graalvm.js/js
 //    implementation 'org.graalvm.js:js:21.1.0'
