@@ -7,6 +7,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -63,7 +64,7 @@ public class GameSessionRepository {
     public void upgradeRole(String roomId,String username){
         hashOpsEnterInfo.put(roomId, username, CREATOR);
     }
-//    public List<String> findSessions(String roomId) {
-//        return hashOpsEnterInfo.values(roomId);
-//    }
+    public List<String> findSessions(String roomId) {
+        return hashOpsEnterInfo.values(roomId);
+    }
 }

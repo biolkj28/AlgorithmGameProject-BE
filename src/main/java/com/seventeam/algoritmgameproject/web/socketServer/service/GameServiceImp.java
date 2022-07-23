@@ -71,6 +71,10 @@ public class GameServiceImp implements GameService {
 
         //세션 저장
         sessionRepository.saveEnterSession(gameRoom.getRoomId(), user.getUserId(), GameSessionRepository.CREATOR);
+        //추후 지우기
+        String role = sessionRepository.getRole(gameRoom.getRoomId(), user.getUserId());
+        log.info("입장자 권한 부여:{}",role);
+        //
         sessionRepository.saveRoomIdBySession(user.getUserId(), gameRoom.getRoomId());
         return gameRoom;
 
@@ -102,9 +106,15 @@ public class GameServiceImp implements GameService {
         GameRoom room = gameRoomRepository.findRoomById(dto.getServer(), dto.getRoomId());
         UserGameInfo creator = room.getCreatorGameInfo();
         if (Optional.ofNullable(creator).isPresent()) {
+            log.info("입장 인원:{}", user.getUserId());
             gameRoomRepository.enterAndExitGameRoom(room, true);
             // 입장자 세션 저장, 전송 queue 주소 구독 필수
+
             sessionRepository.saveEnterSession(dto.getRoomId(), user.getUserId(), GameSessionRepository.PARTICIPANT);
+            //추후 지우기
+            String role = sessionRepository.getRole(dto.getRoomId(), user.getUserId());
+            log.info("입장자 권한 부여:{}",role);
+            //
             sessionRepository.saveRoomIdBySession(user.getUserId(), dto.getRoomId());
             return creator;
 
@@ -119,18 +129,21 @@ public class GameServiceImp implements GameService {
         String role = sessionRepository.getRole(roomId, user.getUserId());
         log.info("퇴장 이벤트 사용 :{}, ROLE:{}", user.getUserId(), role);
         GameRoom roomById = gameRoomRepository.findRoomById(server, roomId);
-
+        exitEvent(roomById,user.getUserId(),role);
+    }
+    public void  exitEvent(GameRoom room, String username, String role){
 
         if (role == null) {
             throw new NullPointerException("참여자가 아닙니다");
         }
+
         //방 정보에서 입장 가능으로 변경
-        gameRoomRepository.enterAndExitGameRoom(roomById, false);
+        gameRoomRepository.enterAndExitGameRoom(room, false);
         // 방 기준 세션 정보 삭제
-        sessionRepository.deleteSession(roomId, user.getUserId());
+        sessionRepository.deleteSession(room.getRoomId(), username);
         //세션에 저장된 방 정보 삭제
-        sessionRepository.deleteRoomIdBySession(user.getUserId());
-        Long cnt = sessionRepository.roomEnterCnt(roomId);
+        sessionRepository.deleteRoomIdBySession(username);
+        Long cnt = sessionRepository.roomEnterCnt(room.getRoomId());
         if (role.equals(GameSessionRepository.CREATOR)) {
 
             log.info("잔여 인원:{}", cnt);
@@ -138,30 +151,24 @@ public class GameServiceImp implements GameService {
             if(cnt == 1) {
 
                 log.info("방 참여자 권한 상승 진행");
-                String othersSession = sessionRepository.findOthersSession(roomId, user.getUserId());
+                String othersSession = sessionRepository.findOthersSession(room.getRoomId(), username);
                 Optional<User> byUserId = userRepository.findByUserId(othersSession);
                 User otherUser = byUserId.orElseThrow(() -> new IllegalArgumentException("없는 사용자 입니다."));
                 UserGameInfo otherUserGameInfo = userToUserInfo(otherUser);
 
-                sessionRepository.upgradeRole(roomId, othersSession);
-                gameRoomRepository.changeCreator(roomById, otherUserGameInfo);
+                sessionRepository.upgradeRole(room.getRoomId(), othersSession);
+                gameRoomRepository.changeCreator(room, otherUserGameInfo);
 
-                //테스트 로그
-                String roles = sessionRepository.getRole(roomId, user.getRole());
-                log.info("권한 상승 유저:{}, 권한 PARTICIPANT -> {}",otherUser.getUserId(),roles);
             }else if (cnt == 0) {
 
                 log.info("방 삭제 로직 진행");
-                gameRoomRepository.deleteRoom(server, roomId);
-                gameRoomRepository.deleteServerRoomData(roomId);
+                gameRoomRepository.deleteRoom(room.getServer(), room.getRoomId());
+                gameRoomRepository.deleteServerRoomData(room.getRoomId());
 
             }
 
         }
-
-
     }
-
     //준비 메시지 처리
     @Override
     public void ready(ReadyMessage message) {
@@ -226,47 +233,7 @@ public class GameServiceImp implements GameService {
         String role = sessionRepository.getRole(roomId, username);
         String server = gameRoomRepository.findServer(roomId);
         GameRoom roomById = gameRoomRepository.findRoomById(server, roomId);
-
-
-        if (role == null) {
-            throw new NullPointerException("참여자가 아닙니다");
-        }
-        //방 정보에서 입장 가능으로 변경
-        gameRoomRepository.enterAndExitGameRoom(roomById, false);
-        // 방 기준 세션 정보 삭제
-        sessionRepository.deleteSession(roomId,username);
-        //세션에 저장된 방 정보 삭제
-        sessionRepository.deleteRoomIdBySession(username);
-        Long cnt = sessionRepository.roomEnterCnt(roomId);
-        log.info("잔여 인원:{}", cnt);
-        if (role.equals(GameSessionRepository.CREATOR)) {
-
-            log.info("잔여 인원:{}", cnt);
-
-            if(cnt == 1) {
-
-                log.info("방 참여자 권한 상승 진행");
-                String othersSession = sessionRepository.findOthersSession(roomId, username);
-                Optional<User> byUserId = userRepository.findByUserId(othersSession);
-                User otherUser = byUserId.orElseThrow(() -> new IllegalArgumentException("없는 사용자 입니다."));
-                UserGameInfo otherUserGameInfo = userToUserInfo(otherUser);
-
-                sessionRepository.upgradeRole(roomId, othersSession);
-                gameRoomRepository.changeCreator(roomById, otherUserGameInfo);
-                
-                //테스트 로그
-                String roles = sessionRepository.getRole(roomId, username);
-                log.info("권한 상승 유저:{}, 권한 PARTICIPANT -> {}",otherUser.getUserId(),roles);
-
-            }else if (cnt == 0) {
-
-                log.info("방 삭제 로직 진행");
-                gameRoomRepository.deleteRoom(server, roomId);
-                gameRoomRepository.deleteServerRoomData(roomId);
-
-            }
-
-        }
+        exitEvent(roomById,username,role);
     }
 
     @Override
