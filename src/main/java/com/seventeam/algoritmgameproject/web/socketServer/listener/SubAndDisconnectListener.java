@@ -1,45 +1,51 @@
-package com.seventeam.algoritmgameproject.config.stomp;
+package com.seventeam.algoritmgameproject.web.socketServer.listener;
 
+import com.seventeam.algoritmgameproject.web.socketServer.repository.GameSessionRepository;
 import com.seventeam.algoritmgameproject.web.socketServer.service.GameService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
+import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.messaging.AbstractSubProtocolEvent;
 
-import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class StompInterceptor implements ChannelInterceptor {
+public class SubAndDisconnectListener implements ApplicationListener<AbstractSubProtocolEvent> {
 
     private final GameService service;
-
+    private final GameSessionRepository repository;
 
     @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+    public void onApplicationEvent(AbstractSubProtocolEvent event) {
+
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
+        System.out.println("COMMAND: " + accessor.getCommand());
+
         String destination = Optional.ofNullable(accessor.getDestination()).orElse("notFoundRoomId");
         String roomId = getRoomId(destination);
-        String username = Objects.requireNonNull(message.getHeaders().get("simpUser")).toString();
+        String username = String.valueOf(accessor.getUser());
 
         if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
             //유저 정보 전송 , 구독 주소 변경
-            if (service.isParticipant(roomId,username)) {
+            log.info("방:{},입장:{}", roomId, username);
+            if (service.isParticipant(roomId, username)) {
                 log.info("Connect User: {}", username);
                 service.sendToMyUserInfo(roomId, username);
             }
-
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) {
+            log.info("퇴장:{}", username);
             log.info("Disconnect username: {}", username);
-            service.disconnectEvent(roomId,username);
+            log.info("NotYetExit:{}", repository.notYetExit(username));
+            if(repository.notYetExit(username)){
+                service.disconnectEvent(username);
+            }
+
         }
-        return message;
     }
 
     public String getRoomId(String destination) {

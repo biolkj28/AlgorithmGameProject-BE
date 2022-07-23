@@ -10,51 +10,51 @@ import java.util.*;
 public interface SolutionService {
 
     // 1번
-    List<TestCase> solution1ByEx();
-    List<TestCase> solution1TestCases();
+    Set<TestCase> solution1ByEx();
+    Set<TestCase> solution1TestCases();
 
     //2번
-    List<TestCase> solution2ByEx();
-    List<TestCase> solution2TestCases();
+    Set<TestCase> solution2ByEx();
+    Set<TestCase> solution2TestCases();
 
     //3번 핸드폰 번호 가리기
-    List<TestCase> solution3ByEx();
-    List<TestCase> solution3TestCases();
+    Set<TestCase> solution3ByEx();
+    Set<TestCase> solution3TestCases();
 
     //4번 x만큼 간격이 있는 n개의 숫자
-    List<TestCase> solution4ByEx();
-    List<TestCase> solution4TestCases();
+    Set<TestCase> solution4ByEx();
+    Set<TestCase> solution4TestCases();
 
     /*
      * 중 문제
      */
     //5. 부족한 금액 계산하기
-    List<TestCase> solution5ByEx();
-    List<TestCase> solution5TestCases();
+    Set<TestCase> solution5ByEx();
+    Set<TestCase> solution5TestCases();
 
     // 문제 6번 2016년
-    List<TestCase> solution6ByEx();
-    List<TestCase> solution6TestCases();
+    Set<TestCase> solution6ByEx();
+    Set<TestCase> solution6TestCases();
 
     // 문제 7번 문자열 내 p와 y의 개수
-    List<TestCase> solution7ByEx();
-    List<TestCase> solution7TestCases();
+    Set<TestCase> solution7ByEx();
+    Set<TestCase> solution7TestCases();
 
 
     /*
      * 상 문제
      */
     //문제 8번
-    List<TestCase> solution8ByEx();
-    List<TestCase> solution8TestCases();
+    Set<TestCase> solution8ByEx();
+    Set<TestCase> solution8TestCases();
 
     //문제 9 같은 숫자는 싫어
-    List<TestCase> solution9ByEx();
-    List<TestCase> solution9TestCases();
+    Set<TestCase> solution9ByEx();
+    Set<TestCase> solution9TestCases();
 
     //10번 로또의 최고 순위와 최저 순위
-    List<TestCase> solution10ByEx();
-    List<TestCase> solution10TestCases();
+    Set<TestCase> solution10ByEx();
+    Set<TestCase> solution10TestCases();
 
-    List<TestCase> generatedTestCases(int i);
+    Set<TestCase> generatedTestCases(int i);
 }

@@ -36,7 +36,7 @@ public interface GameService {
 
     void sendOpFailMessage(String roomId, String username);
 
-    void disconnectEvent(String roomId, String username);
+    void disconnectEvent(String username);
 
     UserGameInfo userToUserInfo(User user);
 }

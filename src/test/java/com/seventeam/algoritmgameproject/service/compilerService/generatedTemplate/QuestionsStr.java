@@ -3,7 +3,7 @@ package com.seventeam.algoritmgameproject.service.compilerService.generatedTempl
 public class QuestionsStr {
     public static final String code1 = "public class Sol {\n" +
             "        \n" +
-            "    public String solution(String s) {\n" +
+            "    public String solution(String y) {\n" +
             "        int len = s.length();\n" +
             "        int idx = len / 2;\n" +
             "        return ((len & 1) == 1)?String.valueOf(s.charAt(idx)):s.substring(idx - 1, idx + 1);\n" +
@@ -11,7 +11,7 @@ public class QuestionsStr {
             "    }\n" +
             "}";
     public static final String code2 = "public class Solion {\n" +
-            "    public int solution(String s) {\n" +
+            "    public int solution(String y) {\n" +
             "        int answer = 0;\n" +
             "        int result = 0;\n" +
             "        boolean sign = true;\n" +

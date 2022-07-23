@@ -28,21 +28,21 @@ public class SolutionServiceImp implements SolutionService {
     }
 
     @Override
-    public List<TestCase> solution1ByEx() {
+    public Set<TestCase> solution1ByEx() {
         String[] ans = {"abcde", "qwer"};
         return solution1Core(ans, true);
     }
 
     @Override
-    public List<TestCase> solution1TestCases() {
+    public Set<TestCase> solution1TestCases() {
         String[] ans = {"abcde", "qwer", "qwrq", "dgsahdafahsdhsd", "dergsgseg", "GSDgagdsg", "sdffdasf", "sdfgeegbj", "adfsasfd", "asdfadf"};
         return solution1Core(ans, false);
     }
 
-    List<TestCase> solution1Core(String[] ans, boolean isExample) {
+    Set<TestCase> solution1Core(String[] ans, boolean isExample) {
         String type = "String";
         String ansType = "String";
-        List<TestCase> cases = new ArrayList<>();
+        Set<TestCase> cases = new LinkedHashSet<>();
         for (String an : ans) {
             TestCase testCase = TestCase.builder()
                     .params(an)
@@ -77,21 +77,21 @@ public class SolutionServiceImp implements SolutionService {
     }
 
     @Override
-    public List<TestCase> solution2ByEx() {
+    public Set<TestCase> solution2ByEx() {
         String[] ans = {"1234"};
         return solution2Core(ans, true);
     }
 
     @Override
-    public List<TestCase> solution2TestCases() {
+    public Set<TestCase> solution2TestCases() {
         String[] ans = {"1234", "-1234", "1231", "-1231", "2432", "-2432", "347", "-347", "52", "-25"};
         return solution2Core(ans, false);
     }
 
-    List<TestCase> solution2Core(String[] ans, boolean isExample) {
+    Set<TestCase> solution2Core(String[] ans, boolean isExample) {
         String type = "String";
         String ansType = "int";
-        List<TestCase> cases = new ArrayList<>();
+        Set<TestCase> cases = new LinkedHashSet<>();
         for (String an : ans) {
             TestCase testCase = TestCase.builder()
                     .params(an)
@@ -118,9 +118,9 @@ public class SolutionServiceImp implements SolutionService {
     }
 
     @Override
-    public List<TestCase> solution3ByEx() {
+    public Set<TestCase> solution3ByEx() {
         String[] input = {"01033334444", "027778888"};
-        List<TestCase> cases = new ArrayList<>();
+        Set<TestCase> cases = new LinkedHashSet<>();
         for (String s : input) {
             cases.add(solution3Core(s, true));
         }
@@ -128,8 +128,8 @@ public class SolutionServiceImp implements SolutionService {
     }
 
     @Override
-    public List<TestCase> solution3TestCases() {
-        List<TestCase> cases = new ArrayList<>();
+    public Set<TestCase> solution3TestCases() {
+        Set<TestCase> cases = new LinkedHashSet<>();
         for (int i = 0; i < 8; i++) {
             String randNumber = util.randomPhoneNumber();
             cases.add(solution3Core(randNumber, false));
@@ -165,9 +165,9 @@ public class SolutionServiceImp implements SolutionService {
     }
 
     @Override
-    public List<TestCase> solution4ByEx() {
+    public Set<TestCase> solution4ByEx() {
         int[][] ans = {{2, 5}, {4, 3}, {-4, 2}};
-        List<TestCase> testCases = new ArrayList<>();
+        Set<TestCase> testCases = new LinkedHashSet<>();
         for (int[] an : ans) {
             testCases.add(solution4Core(an[0], an[1], true));
         }
@@ -175,8 +175,8 @@ public class SolutionServiceImp implements SolutionService {
     }
 
     @Override
-    public List<TestCase> solution4TestCases() {
-        List<TestCase> testCases = new ArrayList<>();
+    public Set<TestCase> solution4TestCases() {
+        Set<TestCase> testCases = new LinkedHashSet<>();
         for (int i = 0; i < 7; i++) {
             int x = random.nextInt(1001);
             int n = random.nextInt(101) + 1;
@@ -218,15 +218,15 @@ public class SolutionServiceImp implements SolutionService {
     }
 
     @Override
-    public List<TestCase> solution5ByEx() {
-        List<TestCase> cases = new ArrayList<>();
+    public Set<TestCase> solution5ByEx() {
+        Set<TestCase> cases = new LinkedHashSet<>();
         cases.add(solution5Core(3, 20, 4, true));
         return cases;
     }
 
     @Override
-    public List<TestCase> solution5TestCases() {
-        List<TestCase> cases = new ArrayList<>();
+    public Set<TestCase> solution5TestCases() {
+        Set<TestCase> cases = new LinkedHashSet<>();
         for (int i = 0; i < 10; i++) {
             int price = random.nextInt(2500) + 1;
             int money = random.nextInt(1000000000) + 1;
@@ -271,17 +271,17 @@ public class SolutionServiceImp implements SolutionService {
     }
 
     @Override
-    public List<TestCase> solution6ByEx() {
-        List<TestCase> cases = new ArrayList<>();
+    public Set<TestCase> solution6ByEx() {
+        Set<TestCase> cases = new LinkedHashSet<>();
         cases.add(solution6Core(5, 24, true));
         return cases;
 
     }
 
     @Override
-    public List<TestCase> solution6TestCases() {
+    public Set<TestCase> solution6TestCases() {
         int[] daysOfMonth = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-        List<TestCase> cases = new ArrayList<>();
+        Set<TestCase> cases = new LinkedHashSet<>();
         for (int i = 0; i < 10; i++) {
             int month = random.nextInt(12) + 1;
             int day = random.nextInt(daysOfMonth[month - 1]) + 1;
@@ -324,9 +324,9 @@ public class SolutionServiceImp implements SolutionService {
     }
 
     @Override
-    public List<TestCase> solution7ByEx() {
+    public Set<TestCase> solution7ByEx() {
         String[] ans = {"pPoooyY", "Pyy"};
-        List<TestCase> cases = new ArrayList<>();
+        Set<TestCase> cases = new LinkedHashSet<>();
         for (String an : ans) {
             cases.add(solution7Core(an, true));
         }
@@ -334,8 +334,8 @@ public class SolutionServiceImp implements SolutionService {
     }
 
     @Override
-    public List<TestCase> solution7TestCases() {
-        List<TestCase> cases = new ArrayList<>();
+    public Set<TestCase> solution7TestCases() {
+        Set<TestCase> cases = new LinkedHashSet<>();
         for (int i = 0; i < 10; i++) {
             int len = random.nextInt(50) + 1;
             cases.add(solution7Core(util.randomStr(len), false));
@@ -377,8 +377,8 @@ public class SolutionServiceImp implements SolutionService {
     }
 
     @Override
-    public List<TestCase> solution8ByEx() {
-        List<TestCase> cases = new ArrayList<>();
+    public Set<TestCase> solution8ByEx() {
+        Set<TestCase> cases = new LinkedHashSet<>();
         int[] ans = {45, 125};
         for (int an : ans) {
             cases.add(solution8Core(an, true));
@@ -387,8 +387,8 @@ public class SolutionServiceImp implements SolutionService {
     }
 
     @Override
-    public List<TestCase> solution8TestCases() {
-        List<TestCase> cases = new ArrayList<>();
+    public Set<TestCase> solution8TestCases() {
+        Set<TestCase> cases = new LinkedHashSet<>();
         for (int i = 0; i < 10; i++) {
             int n = random.nextInt(100000000) + 1;
             cases.add(solution8Core(n, false));
@@ -428,8 +428,8 @@ public class SolutionServiceImp implements SolutionService {
     }
 
     @Override
-    public List<TestCase> solution9ByEx() {
-        List<TestCase> cases = new ArrayList<>();
+    public Set<TestCase> solution9ByEx() {
+        Set<TestCase> cases = new LinkedHashSet<>();
         int[][] ans = {{1, 1, 3, 3, 0, 1, 1}, {4, 4, 4, 3, 3}};
         for (int[] an : ans) {
             cases.add(solution9Core(an, true));
@@ -438,8 +438,8 @@ public class SolutionServiceImp implements SolutionService {
     }
 
     @Override
-    public List<TestCase> solution9TestCases() {
-        List<TestCase> cases = new ArrayList<>();
+    public Set<TestCase> solution9TestCases() {
+        Set<TestCase> cases = new LinkedHashSet<>();
         for (int i = 0; i < 10; i++) {
             cases.add(solution9Core(util.randomArr(), false));
         }
@@ -491,8 +491,8 @@ public class SolutionServiceImp implements SolutionService {
     }
 
     @Override
-    public List<TestCase> solution10ByEx() {
-        List<TestCase> cases = new ArrayList<>();
+    public Set<TestCase> solution10ByEx() {
+        Set<TestCase> cases = new LinkedHashSet<>();
         int[][] lottos = {{44, 1, 0, 0, 31, 25}, {0, 0, 0, 0, 0, 0}, {45, 4, 35, 20, 3, 9}};
         int[][] win_nums = {{31, 10, 45, 1, 6, 19}, {38, 19, 20, 40, 15, 25}, {20, 9, 3, 45, 4, 35}};
         for (int i = 0; i < lottos.length; i++) {
@@ -502,8 +502,8 @@ public class SolutionServiceImp implements SolutionService {
     }
 
     @Override
-    public List<TestCase> solution10TestCases() {
-        List<TestCase> cases = new ArrayList<>();
+    public Set<TestCase> solution10TestCases() {
+        Set<TestCase> cases = new LinkedHashSet<>();
         for (int i = 0; i < 10; i++) {
             int[][] params = util.randomParamsSol10();
             cases.add(solution10Core(params[0], params[1], false));
@@ -526,8 +526,8 @@ public class SolutionServiceImp implements SolutionService {
         return testCase;
     }
     @Override
-    public List<TestCase>generatedTestCases(int i){
-        List<TestCase> cases = new ArrayList<>();
+    public Set<TestCase>generatedTestCases(int i){
+        Set<TestCase> cases = new LinkedHashSet<>();
         switch (i){
             case 0:{
                 cases.addAll(solution1ByEx());

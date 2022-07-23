@@ -1,14 +1,10 @@
 package com.seventeam.algoritmgameproject.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.seventeam.algoritmgameproject.domain.QuestionLevel;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Entity
 @Getter
@@ -54,17 +50,12 @@ public class Question {
     )
     @MapKeyColumn
     @Column(name = "template",length = 1000)
-    @JsonBackReference
     private Map<String, String> templates = new HashMap<>();
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.PERSIST)
     @ToString.Exclude
-    @JsonBackReference(value = "question-TestCase")
-    private List<TestCase> cases = new ArrayList<>();
+    private Set<TestCase> cases = new LinkedHashSet<>();
 
-    public void setCases(List<TestCase> cases) {
-        this.cases = cases;
-    }
 
     @Builder
     private Question(String title, String question, String limitation, String inOutExHead, String inOutEx, String inOutExDescription, String reference, QuestionLevel level, Map<String, String> templates) {

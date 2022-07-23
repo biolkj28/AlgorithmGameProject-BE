@@ -21,6 +21,7 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,13 +57,21 @@ public class GameServiceImp implements GameService {
                 .winCnt(user.getWinCnt())
                 .loseCnt(user.getLoseCnt())
                 .build();
-        Question question = questionDslRepository.findRandomQuestionLevel(level);
+
+        List<Long> idListByLevel = questionDslRepository.findIdListByLevel(level);
+
+        if (level.equals(QuestionLevel.HARD)) {
+            idListByLevel.remove(idListByLevel.size() - 1);
+        }
+
+        Collections.shuffle(idListByLevel);
+        Question question = questionDslRepository.findOneQuestionByLevel(level, idListByLevel.get(0));
         GameRoom gameRoom = gameRoomRepository.createGameRoom(language, question, userGameInfo);
         gameRoom.questionBlock();
 
         //세션 저장
         sessionRepository.saveEnterSession(gameRoom.getRoomId(), user.getUserId(), GameSessionRepository.CREATOR);
-
+        sessionRepository.saveRoomIdBySession(user.getUserId(), gameRoom.getRoomId());
         return gameRoom;
 
     }
@@ -88,13 +97,15 @@ public class GameServiceImp implements GameService {
     //방 입장, 본인 정보 전송, userDetailPrincipal 추가
     @Override
     public UserGameInfo enterRoom(EnterAndExitRoomRequestDto dto, User user) {
-
+        log.info("방 입장:{}", dto.getRoomId());
+        log.info("방 입장:{}", user.getUserId());
         GameRoom room = gameRoomRepository.findRoomById(dto.getServer(), dto.getRoomId());
         UserGameInfo creator = room.getCreatorGameInfo();
         if (Optional.ofNullable(creator).isPresent()) {
             gameRoomRepository.enterAndExitGameRoom(room, true);
             // 입장자 세션 저장, 전송 queue 주소 구독 필수
-            sessionRepository.saveEnterSession(dto.getRoomId(), GameSessionRepository.PARTICIPANT, user.getUserId());
+            sessionRepository.saveEnterSession(dto.getRoomId(), user.getUserId(), GameSessionRepository.PARTICIPANT);
+            sessionRepository.saveRoomIdBySession(user.getUserId(), dto.getRoomId());
             return creator;
 
         }
@@ -104,28 +115,30 @@ public class GameServiceImp implements GameService {
     @Override
     public void exitRoom(String server, String roomId, User user) {
 
+        //권한
         String role = sessionRepository.getRole(roomId, user.getUserId());
+        log.info("퇴장 이벤트 사용 :{}, ROLE:{}", user.getUserId(), role);
         GameRoom roomById = gameRoomRepository.findRoomById(server, roomId);
+
 
         if (role == null) {
             throw new NullPointerException("참여자가 아닙니다");
         }
-        if (role.equals(GameSessionRepository.PARTICIPANT)) {
+        //방 정보에서 입장 가능으로 변경
+        gameRoomRepository.enterAndExitGameRoom(roomById, false);
+        // 방 기준 세션 정보 삭제
+        sessionRepository.deleteSession(roomId, user.getUserId());
+        //세션에 저장된 방 정보 삭제
+        sessionRepository.deleteRoomIdBySession(user.getUserId());
+        Long cnt = sessionRepository.roomEnterCnt(roomId);
+        if (role.equals(GameSessionRepository.CREATOR)) {
 
-            sessionRepository.deleteSession(roomId, user.getUserId());
+            log.info("잔여 인원:{}", cnt);
 
-        } else if (role.equals(GameSessionRepository.CREATOR)) {
-            sessionRepository.deleteSession(roomId, user.getUserId());
+            if(cnt == 1) {
 
-            Long cnt = sessionRepository.roomEnterCnt(roomId);
-            if (cnt == 0) {
-                gameRoomRepository.deleteRoom(server, roomId);
-                gameRoomRepository.deleteServerRoomData(roomId);
-
-            } else {
-
+                log.info("방 참여자 권한 상승 진행");
                 String othersSession = sessionRepository.findOthersSession(roomId, user.getUserId());
-
                 Optional<User> byUserId = userRepository.findByUserId(othersSession);
                 User otherUser = byUserId.orElseThrow(() -> new IllegalArgumentException("없는 사용자 입니다."));
                 UserGameInfo otherUserGameInfo = userToUserInfo(otherUser);
@@ -133,10 +146,19 @@ public class GameServiceImp implements GameService {
                 sessionRepository.upgradeRole(roomId, othersSession);
                 gameRoomRepository.changeCreator(roomById, otherUserGameInfo);
 
+                //테스트 로그
+                String roles = sessionRepository.getRole(roomId, user.getRole());
+                log.info("권한 상승 유저:{}, 권한 PARTICIPANT -> {}",otherUser.getUserId(),roles);
+            }else if (cnt == 0) {
+
+                log.info("방 삭제 로직 진행");
+                gameRoomRepository.deleteRoom(server, roomId);
+                gameRoomRepository.deleteServerRoomData(roomId);
+
             }
 
         }
-        gameRoomRepository.enterAndExitGameRoom(roomById, false);
+
 
     }
 
@@ -162,12 +184,16 @@ public class GameServiceImp implements GameService {
 
     @Override
     public Boolean isParticipant(String roomId, String username) {
+        log.info("방:{},입장:{}", roomId, username);
         String role = sessionRepository.getRole(roomId, username);
+        log.info("역할:{}", role);
         return role.equals(GameSessionRepository.PARTICIPANT);
     }
 
     @Override
     public void sendToMyUserInfo(String roomId, String username) {
+        log.info("roomId: {}", roomId);
+        log.info("username: {}", username);
         Optional<User> byUserId = userRepository.findByUserId(username);
         User myInfo = byUserId.orElseThrow(() -> new IllegalArgumentException("유저 정보가 없습니다."));
         UserAndRoomIdDto userAndRoomIdDto = new UserAndRoomIdDto(roomId, userToUserInfo(myInfo));
@@ -177,28 +203,49 @@ public class GameServiceImp implements GameService {
     @Override
     public void sendLoseMessage(String roomId, String username) {
         String otherUserId = sessionRepository.findOthersSession(roomId, username);
-        LoseMessage msg = new LoseMessage();
-        redisTemplate.convertAndSend(channelTopic.getTopic(), new LoseMessageDto(roomId, msg, otherUserId));
+        if (otherUserId != null) {
+            LoseMessage msg = new LoseMessage();
+            redisTemplate.convertAndSend(channelTopic.getTopic(), new LoseMessageDto(roomId, msg, otherUserId));
+        }
     }
 
     @Override
     public void sendOpFailMessage(String roomId, String username) {
         String otherUserId = sessionRepository.findOthersSession(roomId, username);
-        OpFailMessage msg = new OpFailMessage();
-        FailMessageAndToDto dto = new FailMessageAndToDto(roomId, msg, otherUserId);
-        redisTemplate.convertAndSend(channelTopic.getTopic(), dto);
+        if (otherUserId != null) {
+            OpFailMessage msg = new OpFailMessage();
+            FailMessageAndToDto dto = new FailMessageAndToDto(roomId, msg, otherUserId);
+            redisTemplate.convertAndSend(channelTopic.getTopic(), dto);
+        }
     }
 
     @Override
-    public void disconnectEvent(String roomId, String username) {
-        sessionRepository.deleteSession(roomId, username);
+    public void disconnectEvent(String username) {
+        String roomId = sessionRepository.findRoomIdBySession(username);
+        log.info("방 퇴장 처리 중:{}", roomId);
         String role = sessionRepository.getRole(roomId, username);
         String server = gameRoomRepository.findServer(roomId);
-        if (sessionRepository.roomEnterCnt(roomId) == 1) {
-            GameRoom roomById = gameRoomRepository.findRoomById(server, roomId);
-            if (role.equals(GameSessionRepository.PARTICIPANT)) {
-                gameRoomRepository.enterAndExitGameRoom(roomById, false);
-            } else {
+        GameRoom roomById = gameRoomRepository.findRoomById(server, roomId);
+
+
+        if (role == null) {
+            throw new NullPointerException("참여자가 아닙니다");
+        }
+        //방 정보에서 입장 가능으로 변경
+        gameRoomRepository.enterAndExitGameRoom(roomById, false);
+        // 방 기준 세션 정보 삭제
+        sessionRepository.deleteSession(roomId,username);
+        //세션에 저장된 방 정보 삭제
+        sessionRepository.deleteRoomIdBySession(username);
+        Long cnt = sessionRepository.roomEnterCnt(roomId);
+        log.info("잔여 인원:{}", cnt);
+        if (role.equals(GameSessionRepository.CREATOR)) {
+
+            log.info("잔여 인원:{}", cnt);
+
+            if(cnt == 1) {
+
+                log.info("방 참여자 권한 상승 진행");
                 String othersSession = sessionRepository.findOthersSession(roomId, username);
                 Optional<User> byUserId = userRepository.findByUserId(othersSession);
                 User otherUser = byUserId.orElseThrow(() -> new IllegalArgumentException("없는 사용자 입니다."));
@@ -206,16 +253,20 @@ public class GameServiceImp implements GameService {
 
                 sessionRepository.upgradeRole(roomId, othersSession);
                 gameRoomRepository.changeCreator(roomById, otherUserGameInfo);
-                gameRoomRepository.enterAndExitGameRoom(roomById, false);
+                
+                //테스트 로그
+                String roles = sessionRepository.getRole(roomId, username);
+                log.info("권한 상승 유저:{}, 권한 PARTICIPANT -> {}",otherUser.getUserId(),roles);
+
+            }else if (cnt == 0) {
+
+                log.info("방 삭제 로직 진행");
+                gameRoomRepository.deleteRoom(server, roomId);
+                gameRoomRepository.deleteServerRoomData(roomId);
+
             }
 
         }
-
-        if (sessionRepository.roomEnterCnt(roomId) == 0) {
-            gameRoomRepository.deleteRoom(server, roomId);
-            gameRoomRepository.deleteServerRoomData(roomId);
-        }
-
     }
 
     @Override

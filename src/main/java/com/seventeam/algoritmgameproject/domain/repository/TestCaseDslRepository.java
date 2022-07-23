@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
 import static com.seventeam.algoritmgameproject.domain.model.QTestCase.testCase;
 
 @Repository
@@ -19,7 +18,7 @@ public class TestCaseDslRepository {
                 .selectFrom(testCase)
                 .where(testCase.question.id.eq(id))
                 .orderBy(testCase.id.asc())
-                .limit(5)
+                .limit(10)
                 .fetch();
     }
 }

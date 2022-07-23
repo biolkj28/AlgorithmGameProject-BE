@@ -1,8 +1,9 @@
 package com.seventeam.algoritmgameproject.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -17,9 +18,9 @@ public class TestCase {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "QUESTION_ID")
-    @JsonManagedReference(value = "question-TestCase")
     @ToString.Exclude
-    Question question;
+    @JsonIgnore
+    private Question question;
 
     @Column(nullable = false, length = 5000)
     private String answer;

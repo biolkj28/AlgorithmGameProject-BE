@@ -60,7 +60,7 @@ public class RedisSubscriber {
                 FailMessageAndToDto failMessageAndToDto = objectMapper.readValue(publishMessage, FailMessageAndToDto.class);
                 sendOpFailMessage(failMessageAndToDto);
 
-            }else if(publishMessage.contains(LOSE)){
+            } else if (publishMessage.contains(LOSE)) {
 
                 LoseMessageDto loseMessageDto = objectMapper.readValue(publishMessage, LoseMessageDto.class);
                 sendLoseMessage(loseMessageDto);
@@ -74,14 +74,18 @@ public class RedisSubscriber {
 
     //구독한 사람에게 send
     public void send(String roomId, Object roomMessage) {
-        messagingTemplate.convertAndSend("/topic/game/room/" + roomId, roomMessage);
+        if(roomId!=null){
+            messagingTemplate.convertAndSend("/topic/game/room/" + roomId, roomMessage);
+        }
     }
 
 
     //특정사용자에게 send
     public void sendToUser(GameMessage gameMessage) {
         log.info("SEND:{}", gameMessage.getTo());
-        messagingTemplateTo.convertAndSendToUser(gameMessage.getTo(), "/queue/game/codeMessage"+gameMessage.getRoomId(), gameMessage);
+        if(gameMessage.getTo()!=null){
+            messagingTemplateTo.convertAndSendToUser(gameMessage.getTo(), "/queue/game/codeMessage/" + gameMessage.getRoomId(), gameMessage);
+        }
     }
 
     public void sendUserInfo(UserAndRoomIdDto dto) {
@@ -89,10 +93,16 @@ public class RedisSubscriber {
     }
 
     public void sendOpFailMessage(FailMessageAndToDto dto) {
-        messagingTemplate.convertAndSendToUser(dto.getTo(), "/queue/game/codeMessage"+dto.getRoomId(), dto.getMessage());
+        log.info("SEND:{}", dto.getTo());
+        if (dto.getTo() != null) {
+            messagingTemplate.convertAndSendToUser(dto.getTo(), "/queue/game/codeMessage/" + dto.getRoomId(), dto.getMessage());
+        }
     }
 
     public void sendLoseMessage(LoseMessageDto dto) {
-        messagingTemplate.convertAndSendToUser(dto.getTo(), "/queue/game/codeMessage"+dto.getRoomId(), dto.getLoseMessage());
+        log.info("SEND:{}", dto.getTo());
+        if (dto.getTo() != null) {
+            messagingTemplate.convertAndSendToUser(dto.getTo(), "/queue/game/codeMessage/" + dto.getRoomId(), dto.getLoseMessage());
+        }
     }
 }

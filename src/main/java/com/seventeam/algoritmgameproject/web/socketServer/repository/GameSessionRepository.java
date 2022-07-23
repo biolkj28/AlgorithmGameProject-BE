@@ -7,7 +7,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -16,6 +16,7 @@ import java.util.Set;
 public class GameSessionRepository {
     public static final String PARTICIPANT = "PARTICIPANT";
     public static final String CREATOR = "CREATOR";
+    public static final String FINDER = "FINDER";
     private final RedisTemplate<String, Object> redisTemplate;
     private HashOperations<String, String, String> hashOpsEnterInfo;
 
@@ -41,6 +42,18 @@ public class GameSessionRepository {
         }
         return to;
     }
+    public String findRoomIdBySession(String username){
+        return Objects.requireNonNull(redisTemplate.opsForValue().get(FINDER + username)).toString();
+    }
+    public boolean notYetExit(String username){
+        return Boolean.TRUE.equals(redisTemplate.hasKey(FINDER + username));
+    }
+    public void saveRoomIdBySession(String username, String roomId){
+        redisTemplate.opsForValue().set(FINDER + username, roomId);
+    }
+    public void deleteRoomIdBySession(String username){
+        redisTemplate.delete(FINDER + username);
+    }
     public Long roomEnterCnt(String roomId){
         return hashOpsEnterInfo.size(roomId);
     }
@@ -48,9 +61,9 @@ public class GameSessionRepository {
         return hashOpsEnterInfo.get(roomId, username);
     }
     public void upgradeRole(String roomId,String username){
-        hashOpsEnterInfo.putIfAbsent(roomId, username, CREATOR);
+        hashOpsEnterInfo.put(roomId, username, CREATOR);
     }
-    public List<String> findSessions(String roomId) {
-        return hashOpsEnterInfo.values(roomId);
-    }
+//    public List<String> findSessions(String roomId) {
+//        return hashOpsEnterInfo.values(roomId);
+//    }
 }

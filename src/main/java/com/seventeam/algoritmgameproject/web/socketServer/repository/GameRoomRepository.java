@@ -46,6 +46,8 @@ public class GameRoomRepository {
     }
 
     public String findServer(String roomId) {
+        log.info("방 이름으로 서버 찾는 중:{}", roomId);
+        log.info("찾은 서버 이름:{}",Objects.requireNonNull(redisTemplate.opsForValue().get(FIND_SERVER + roomId)));
         return Objects.requireNonNull(redisTemplate.opsForValue().get(FIND_SERVER + roomId)).toString();
     }
     public void deleteServerRoomData(String roomId){
@@ -64,7 +66,10 @@ public class GameRoomRepository {
                 .startTemplate(question.getTemplates().get(language.getValue()))
                 .creatorGameInfo(creator)
                 .build();
+
+        log.info("서버에 방생성:{}",FIND_SERVER + gameRoom.getRoomId());
         redisTemplate.opsForValue().set(FIND_SERVER + gameRoom.getRoomId(), gameRoom.getServer());
+
         hashOpsGameRoom.put(
                 language.name() + question.getLevel().name(),
                 gameRoom.getRoomId(),
@@ -80,7 +85,8 @@ public class GameRoomRepository {
 
     public void changeCreator(GameRoom room, UserGameInfo userGameInfo) {
         room.changeCreator(userGameInfo);
-        hashOpsGameRoom.putIfAbsent(room.getServer(), room.getRoomId(), room);
+        hashOpsGameRoom.put(room.getServer(), room.getRoomId(), room);
+        log.info("방장 변경 완료:{}",room.getCreatorGameInfo().getPlayerName());
     }
 
     public void enterAndExitGameRoom(GameRoom room, boolean enter) {
@@ -98,6 +104,7 @@ public class GameRoomRepository {
                     room.getRoomId(),
                     room
             );
+            log.info("방장 나가기 처리 완료");
         }
     }
 

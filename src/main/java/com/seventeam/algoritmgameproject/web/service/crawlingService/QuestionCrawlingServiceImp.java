@@ -8,15 +8,14 @@ import com.seventeam.algoritmgameproject.domain.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -25,6 +24,7 @@ public class QuestionCrawlingServiceImp implements QuestionCrawlingService {
 
     private final QuestionRepository repository;
     private final SolutionService solutionService;
+    private final RedisTemplate<String, Object> redisTemplate;
     private static final String WEBDRIVER = "webdriver.chrome.driver";
     private static final String WEB_DRIVER_PATH = "C:/Users/biolk/Downloads/chromedriver.exe";
     private WebDriver driver;
@@ -83,7 +83,7 @@ public class QuestionCrawlingServiceImp implements QuestionCrawlingService {
             Question question = uploadQuestion(QUESTION_URL[i], level);
 
             //해당 문제 테스트케이스 생성(1~10)
-            List<TestCase> testCases = solutionService.generatedTestCases(i);
+           Set<TestCase> testCases = solutionService.generatedTestCases(i);
             for (TestCase atomic : testCases) {
                 question.add(atomic);
                 log.info(atomic.toString());
@@ -92,6 +92,11 @@ public class QuestionCrawlingServiceImp implements QuestionCrawlingService {
         }
         repository.saveAll(list);
     }
+    @Override
+    public void initQuestionIdByLevel() {
+
+    }
+
 
     //문제 추가
     public Question uploadQuestion(String questionUrl, QuestionLevel level) {

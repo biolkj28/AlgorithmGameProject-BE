@@ -58,7 +58,7 @@ public class SecurityConfig {
                 .and()   // JwtFilter 를 등록한 JwtSecurityConfig 적용
                 .addFilterBefore(new JwtFilter(provider), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtExceptionFilter(new ObjectMapper()), JwtFilter.class);
-                //.authorizeRequests()
+//                .authorizeRequests()
 //                .antMatchers(HttpMethod.GET, "/login/oauth2/code/github").permitAll()
 //                .antMatchers(HttpMethod.GET, "/ws-stomp/**").permitAll()
 //                .antMatchers(

@@ -66,6 +66,7 @@ public class CompilerService {
         if (template == null) {
             throw new RuntimeException("해당 언어는 지원하지 않습니다");
         }
+
         JSONObject compile = jDoodleApi.compile(template.compileCode(dto.getCodeStr(), testCases, dto.getQuestionId()), language);
         String output = compile.get("output").toString();
         log.info(output);
@@ -88,6 +89,7 @@ public class CompilerService {
         String[] ans = output.replace("\n", "").split("_");
         int cnt = 0;
         boolean resultBool = true;
+        String msg;
         //테스트케이스의 개수로 퍼센트지 계산을 위한 변수
         int divide = (100 / testCases.size());
         for (int i = 0; i < ans.length; i++) {
@@ -105,16 +107,18 @@ public class CompilerService {
         }
         if (cnt < 100) {
             resultBool = false;
+            msg = "오답";
             service.sendOpFailMessage(dto.getRoomId(), user.getUserId());
         } else {
             winProcess(user);
             service.sendLoseMessage(dto.getRoomId(), user.getUserId());
             loseProcess(dto.getRoomId(), user);
+            msg = "승리";
         }
         //컴파일 동시성 문제 방지
         compileRequestMap.remove(dto.getRoomId());
         return CompileResultDto.builder()
-                .msg("승리")
+                .msg(msg)
                 .result(resultBool)
                 .build();
 
