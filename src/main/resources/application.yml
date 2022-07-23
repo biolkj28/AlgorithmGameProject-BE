@@ -1,6 +1,5 @@
 #공통 설정
 server:
-  port: 8080
   tomcat:
     uri-encoding: utf-8
 
@@ -22,8 +21,6 @@ spring:
         web-allow-others: true
       enabled: true
 
-  profiles:
-    active: EC2
 ---
 #profiles
 spring:
@@ -40,10 +37,25 @@ spring:
     password:
 
 ---
+server:
+  port: 8080
 spring:
   config:
     activate:
       on-profile: "EC2"
+
+  datasource:
+    url: jdbc:h2:file:/home/ubuntu/data/testDB
+    username: sa
+    password:
+---
+server:
+  port: 8081
+spring:
+  config:
+    activate:
+      on-profile: "SUB"
+
   datasource:
     url: jdbc:h2:file:/home/ubuntu/data/testDB
     username: sa

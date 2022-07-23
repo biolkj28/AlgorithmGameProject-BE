@@ -73,7 +73,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 "/actuator",
                 "/actuator/**",
                 "/h2-console",
-                "/favicon.ico");
+                "/favicon.ico",
+                "/profile");
         for (String resourceRequest : resourceRequests) {
             if (url.contains(resourceRequest)) {
                 isResourceUrl = true;
