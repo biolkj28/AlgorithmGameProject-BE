@@ -1,7 +1,7 @@
 package com.seventeam.algoritmgameproject;
 
 
-import com.seventeam.algoritmgameproject.web.service.crawlingService.QuestionCrawlingService;
+import com.seventeam.algoritmgameproject.web.service.crawling_service.QuestionCrawlingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

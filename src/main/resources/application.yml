@@ -3,6 +3,7 @@ server:
   tomcat:
     uri-encoding: utf-8
 
+
 #jpa setting
 spring:
   jpa:
@@ -20,6 +21,9 @@ spring:
       settings:
         web-allow-others: true
       enabled: true
+
+  profiles:
+    active: testDB
 
 ---
 #profiles

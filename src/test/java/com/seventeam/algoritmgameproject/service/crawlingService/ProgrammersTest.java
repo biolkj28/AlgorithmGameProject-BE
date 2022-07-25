@@ -354,7 +354,7 @@ public class ProgrammersTest {
     public Question uploadQuestion(String questionUrl, QuestionLevel level) {
         //given
         boolean isGetQuestions = true;
-        com.seventeam.algoritmgameproject.domain.model.Question question = null;
+        com.seventeam.algoritmgameproject.domain.model.questions.Question question = null;
         //문제 제목
         String title = null;
         //문제 설명

@@ -1,9 +1,9 @@
 package com.seventeam.algoritmgameproject.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.seventeam.algoritmgameproject.security.Jwt.JwtExceptionFilter;
-import com.seventeam.algoritmgameproject.security.Jwt.JwtFilter;
-import com.seventeam.algoritmgameproject.security.Jwt.JwtTokenProvider;
+import com.seventeam.algoritmgameproject.security.JwtExceptionFilter;
+import com.seventeam.algoritmgameproject.security.JwtFilter;
+import com.seventeam.algoritmgameproject.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.ConditionalOnDefaultWebSecurity;

@@ -31,7 +31,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
     @Override
     public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
-        registration.setTimeToFirstMessage(300000).setSendTimeLimit(30000); // Time
+        registration.setTimeToFirstMessage(3000000).setSendTimeLimit(300000); // Time
     }
 
 }

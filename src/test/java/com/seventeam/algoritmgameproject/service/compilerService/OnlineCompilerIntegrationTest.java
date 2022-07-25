@@ -1,32 +1,14 @@
 package com.seventeam.algoritmgameproject.service.compilerService;
 
 
-import com.seventeam.algoritmgameproject.domain.model.TestCase;
-import com.seventeam.algoritmgameproject.domain.model.User;
-import com.seventeam.algoritmgameproject.domain.repository.TestCaseDslRepository;
-import com.seventeam.algoritmgameproject.service.compilerService.generatedTemplate.*;
-import com.seventeam.algoritmgameproject.web.dto.CompileRequestDto;
-import com.seventeam.algoritmgameproject.web.service.compilerService.CompilerService;
-import com.seventeam.algoritmgameproject.web.service.compilerService.Language;
-import com.seventeam.algoritmgameproject.web.service.compilerService.JDoodleApi;
-import com.seventeam.algoritmgameproject.web.service.compilerService.generatedTemplate.GeneratedTemplate;
 import lombok.extern.slf4j.Slf4j;
 
 
-import org.json.simple.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 //@SpringBootTest
 @Slf4j

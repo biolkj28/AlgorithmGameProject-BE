@@ -1,7 +1,7 @@
 package com.seventeam.algoritmgameproject.config;
 
 
-import com.seventeam.algoritmgameproject.web.socketServer.pubsub.RedisSubscriber;
+import com.seventeam.algoritmgameproject.web.service.game_service.RedisSubscriber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;

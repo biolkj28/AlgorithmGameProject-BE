@@ -2,34 +2,19 @@ package com.seventeam.algoritmgameproject.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.seventeam.algoritmgameproject.domain.QuestionLevel;
-import com.seventeam.algoritmgameproject.domain.model.Question;
-import com.seventeam.algoritmgameproject.domain.model.TestCase;
-import com.seventeam.algoritmgameproject.domain.model.User;
-import com.seventeam.algoritmgameproject.domain.repository.QuestionDslRepository;
-import com.seventeam.algoritmgameproject.security.repository.UserRepository;
-import com.seventeam.algoritmgameproject.web.dto.QuestionDto;
-import com.seventeam.algoritmgameproject.web.dto.QuestionRedis;
-import com.seventeam.algoritmgameproject.web.dto.TestCaseRedis;
-import com.seventeam.algoritmgameproject.web.service.compilerService.Language;
+import com.seventeam.algoritmgameproject.web.repository.questions_repository.QuestionDslRepository;
+import com.seventeam.algoritmgameproject.web.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
 
 @Slf4j
 @ActiveProfiles("testDB")

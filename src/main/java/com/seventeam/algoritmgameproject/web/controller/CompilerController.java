@@ -1,10 +1,10 @@
 package com.seventeam.algoritmgameproject.web.controller;
 
 import com.seventeam.algoritmgameproject.config.HttpCode;
-import com.seventeam.algoritmgameproject.security.service.UserDetailImpl;
-import com.seventeam.algoritmgameproject.web.dto.CompileRequestDto;
-import com.seventeam.algoritmgameproject.web.dto.CompileResultDto;
-import com.seventeam.algoritmgameproject.web.service.compilerService.CompilerService;
+import com.seventeam.algoritmgameproject.web.service.login_service.UserDetailImpl;
+import com.seventeam.algoritmgameproject.web.dto.compiler_dto.CompileRequestDto;
+import com.seventeam.algoritmgameproject.web.dto.compiler_dto.CompileResultDto;
+import com.seventeam.algoritmgameproject.web.service.compiler_service.CompilerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

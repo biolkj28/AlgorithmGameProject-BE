@@ -17,6 +17,7 @@ public class CustomHandShaker extends DefaultHandshakeHandler {
         String uri = request.getURI().toString();
         final String username  = uri.split("=")[1];
         log.info("User with ID '{}' opened the page", username);
+        //업그레이드 헤더에 username 설정,public static final String USER_HEADER = "simpUser";,key 등록, 세션을 키로 , principal name을 value로 등록해서 탐색
         return new UserPrincipal(username);
     }
 }
