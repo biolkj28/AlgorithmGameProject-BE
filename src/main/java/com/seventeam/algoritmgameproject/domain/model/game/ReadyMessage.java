@@ -12,8 +12,10 @@ public class ReadyMessage {
     private String server;
     private String roomId;
     private String sender;
-    public String title;
-    public String question;
-    public String template;
+
+    private Long questionId;
+    private String title;
+    private String question;
+    private String template;
 
 }

@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GameProcessMessage implements Serializable {
-
+    private static final long serialVersionUID = 6283278977089006639L;
     @Getter
     @NoArgsConstructor
     public static class Request{

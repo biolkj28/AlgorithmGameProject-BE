@@ -1,5 +1,6 @@
 package com.seventeam.algoritmgameproject.config;
 
+import com.seventeam.algoritmgameproject.config.stomp.AgentWebSocketHandlerDecoratorFactory;
 import com.seventeam.algoritmgameproject.config.stomp.CustomHandShaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +15,7 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 @EnableWebSocketMessageBroker // stomp 사용 선언
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-
+    private final AgentWebSocketHandlerDecoratorFactory decoratorFactory;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -27,11 +28,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws-stomp").setAllowedOriginPatterns("*")
                 .setAllowedOrigins("localhost:3000")// 소켓 연결 요청 URI
                 .setHandshakeHandler(new CustomHandShaker())
-                .withSockJS().setHeartbeatTime(10000); // sock.js를 통하여 낮은 버전의 브라우저에서도 websocket이 동작할수 있게 합니다.
+                .withSockJS(); // sock.js를 통하여 낮은 버전의 브라우저에서도 websocket이 동작할수 있게 합니다.
     }
     @Override
     public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
-        registration.setTimeToFirstMessage(3000000).setSendTimeLimit(300000); // Time
+        registration.setDecoratorFactories(decoratorFactory).setTimeToFirstMessage(3000000).setSendTimeLimit(300000); // Time
     }
 
 }

@@ -32,7 +32,7 @@ public class SubAndDisconnectListener implements ApplicationListener<AbstractSub
         if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
             //유저 정보 전송 , 구독 주소 변경
             log.info("방:{},입장:{}", roomId, username);
-            if (service.isParticipant(roomId, username)) {
+            if (service.isParticipant(roomId, username) && destination.equals("/topic/game/room/"+roomId)) {
                 log.info("Connect User: {}", username);
                 service.sendToMyUserInfo(roomId, username);
             }

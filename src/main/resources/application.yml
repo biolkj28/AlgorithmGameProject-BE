@@ -26,11 +26,16 @@ spring:
     active: testDB
 
 ---
-#profiles
+#profilesries.type = none
+config:
 spring:
   redis:
     host: 127.0.0.1
     port: 6379
+  data:
+    redis:
+      repositories:
+        enabled: false
 
   config:
     activate:
@@ -39,6 +44,8 @@ spring:
     url: jdbc:h2:file:C:/data/testDB
     username: sa
     password:
+
+
 
 ---
 server:

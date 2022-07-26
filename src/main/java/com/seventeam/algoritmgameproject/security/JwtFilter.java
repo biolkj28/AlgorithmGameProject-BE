@@ -20,16 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtTokenProvider provider;
-//    private static final List<String> EXCLUDE_URL =
-//            Collections.unmodifiableList(
-//                    Arrays.asList(
-//                            "/login/oauth2/code/github",
-//                            "/favicon.ico",
-//                            "/h2-console",
-//                            "/swagger-ui/index.html",
-//                            "/actuator",
-//                            "/actuator/**"
-//                    ));
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

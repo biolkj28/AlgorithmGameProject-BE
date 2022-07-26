@@ -31,7 +31,7 @@ public class GameController {
 
     @MessageMapping("/game/ready")
     public void ready(ReadyMessage message) {
-        log.info("READY:{}", message.toString());
+        log.info("READY:{}", message.getType());
         service.ready(message);
     }
 }

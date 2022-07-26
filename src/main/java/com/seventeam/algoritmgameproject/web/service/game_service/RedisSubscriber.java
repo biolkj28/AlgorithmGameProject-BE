@@ -20,8 +20,6 @@ public class RedisSubscriber {
     private static final String READY = "READY";
     private static final String GAME = "GAME";
     private static final String USERINFO = "USERINFO";
-    private static final String OPFAIL = "OPFAIL";
-    private static final String LOSE = "LOSE";
 
     /**
      * Redis에서 메시지가 발행(publish)되면 대기하고 있던 onMessage가 해당 메시지를 받아 처리한다.

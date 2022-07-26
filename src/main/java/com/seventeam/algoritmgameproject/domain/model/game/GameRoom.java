@@ -22,14 +22,15 @@ public class GameRoom implements Serializable {
     private String questionLevel;
     @Schema(type = "String", example = "JAVAEASY",description = "서버 이름")
     private String server;
-    @Schema(type = "Long", example = "1",description = "문제 DB ID")
-    private Long questionId;
-    @Schema(type = "String", example = "문제1",description = "문제 제목")
-    private String questionTitle;
-    @Schema(type = "String", example = "문제",description = "문제")
-    private String question;
-    @Schema(type = "String",description = "문제 시작 코드")
-    private String startTemplate;
+
+//    @Schema(type = "Long", example = "1",description = "문제 DB ID")
+//    private Long questionId;
+//    @Schema(type = "String", example = "문제1",description = "문제 제목")
+//    private String questionTitle;
+//    @Schema(type = "String", example = "문제",description = "문제")
+//    private String question;
+//    @Schema(type = "String",description = "문제 시작 코드")
+//    private String startTemplate;
 
     @Schema(type = "UserGameInfo",description = "방 생성 유저 정보")
     private UserGameInfo creatorGameInfo;
@@ -37,11 +38,8 @@ public class GameRoom implements Serializable {
     private boolean isEnter = true;
 
     @Builder
-    public GameRoom(String language, String questionLevel, Long questionId, String questionTitle, String question, String startTemplate, UserGameInfo creatorGameInfo) {
-        this.questionId = questionId;
-        this.questionTitle = questionTitle;
-        this.question = question;
-        this.startTemplate = startTemplate;
+    public GameRoom(String language, String questionLevel, UserGameInfo creatorGameInfo) {
+
         this.roomId = UUID.randomUUID().toString();
         this.language = language;
         this.questionLevel = questionLevel;
@@ -60,10 +58,10 @@ public class GameRoom implements Serializable {
     public void setExit() {
         this.isEnter = true;
     }
-    public void questionBlock(){
-        this.questionTitle = "";
-        this.question = "";
-    }
+//    public void questionBlock(){
+//        this.questionTitle = "";
+//        this.question = "";
+//    }
 
     public void changeCreator(UserGameInfo userGameInfo){
         this.creatorGameInfo = userGameInfo;

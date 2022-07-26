@@ -1,7 +1,7 @@
 package com.seventeam.algoritmgameproject.web.repository.game_repository;
 
 
-import com.seventeam.algoritmgameproject.domain.model.questions.Question;
+import com.seventeam.algoritmgameproject.domain.QuestionLevel;
 import com.seventeam.algoritmgameproject.domain.model.game.UserGameInfo;
 import com.seventeam.algoritmgameproject.web.service.compiler_service.Language;
 import com.seventeam.algoritmgameproject.domain.model.game.GameRoom;
@@ -11,7 +11,9 @@ import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Repository
@@ -28,13 +30,14 @@ public class GameRoomRepository {
         hashOpsGameRoom = redisTemplate.opsForHash();
     }
 
+
     public List<GameRoom> findIsEnterAndSelectedLangAndLevelRooms(String server) {
 
         List<GameRoom> values = hashOpsGameRoom.values(server);
         List<GameRoom> isEnterRooms = new ArrayList<>();
         for (GameRoom value : values) {
             if (value.isEnter()) {
-                value.questionBlock();
+                //value.questionBlock();
                 isEnterRooms.add(value);
             }
         }
@@ -47,7 +50,7 @@ public class GameRoomRepository {
 
     public String findServer(String roomId) {
         log.info("방 이름으로 서버 찾는 중:{}", roomId);
-        log.info("찾은 서버 이름:{}",Objects.requireNonNull(redisTemplate.opsForValue().get(FIND_SERVER + roomId)));
+        log.info("찾은 서버 이름:{}", Objects.requireNonNull(redisTemplate.opsForValue().get(FIND_SERVER + roomId)));
         return Objects.requireNonNull(redisTemplate.opsForValue().get(FIND_SERVER + roomId)).toString();
     }
     public void deleteServerRoomData(String roomId){
@@ -55,15 +58,11 @@ public class GameRoomRepository {
     }
 
     //게임방 생성
-    public GameRoom createGameRoom(Language language, Question question, UserGameInfo creator) {
+    public GameRoom createGameRoom(Language language, QuestionLevel level, UserGameInfo creator) {
 
         GameRoom gameRoom = GameRoom.builder()
                 .language(language.name())
-                .questionLevel(question.getLevel().name())
-                .questionId(question.getId())
-                .questionTitle(question.getTitle())
-                .question(question.getQuestion())
-                .startTemplate(question.getTemplates().get(language.getValue()))
+                .questionLevel(level.name())
                 .creatorGameInfo(creator)
                 .build();
 
@@ -71,7 +70,7 @@ public class GameRoomRepository {
         redisTemplate.opsForValue().set(FIND_SERVER + gameRoom.getRoomId(), gameRoom.getServer());
 
         hashOpsGameRoom.put(
-                language.name() + question.getLevel().name(),
+                language.name() + level.name(),
                 gameRoom.getRoomId(),
                 gameRoom
         );
@@ -107,12 +106,5 @@ public class GameRoomRepository {
             log.info("방장 나가기 처리 완료");
         }
     }
-
-
-    //세션 관리 CRUD
-
-
-    //수정 완료
-
 
 }

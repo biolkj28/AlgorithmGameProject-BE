@@ -42,11 +42,11 @@ public class GameServiceUtil {
         return server.toString();
     }
 
-    public Language getSelectedLang(int langIdx){
+    public Language getSelectedLang(int langIdx) {
 
         switch (langIdx) {
             case 0: {
-               return Language.JAVA;
+                return Language.JAVA;
             }
             case 1: {
                 return Language.NODEJS;
@@ -55,14 +55,14 @@ public class GameServiceUtil {
             case 2: {
                 return Language.PYTHON3;
             }
-            default:{
+            default: {
                 throw new IllegalArgumentException("지원하지 않는 언어 입니다.");
             }
         }
     }
 
-    public QuestionLevel getSelectedLevel(int questionLevelIdx){
-        switch (questionLevelIdx){
+    public QuestionLevel getSelectedLevel(int questionLevelIdx) {
+        switch (questionLevelIdx) {
             case 0: {
                 return QuestionLevel.EASY;
             }
@@ -73,20 +73,40 @@ public class GameServiceUtil {
             case 2: {
                 return QuestionLevel.HARD;
             }
-            default:{
+            default: {
                 throw new IllegalArgumentException("지원하지 않는 언어 입니다.");
             }
         }
     }
 
-    /**
-     * destination정보에서 roomId 추출
-     */
-    public String getRoomId(String destination) {
-        int lastIndex = destination.lastIndexOf('/');
-        if (lastIndex != -1)
-            return destination.substring(lastIndex + 1);
-        else
-            return "";
+    public QuestionLevel getQuestionLevel(String level) {
+        switch (level) {
+            case "EASY": {
+                return QuestionLevel.EASY;
+            }
+            case "NORMAL": {
+                return QuestionLevel.NORMAL;
+            }
+            case "HARD": {
+                return QuestionLevel.HARD;
+            }
+        }
+        return null;
     }
+
+    public String getStartTemplateKey(String lang) {
+        switch (lang) {
+            case "JAVA": {
+                return "java";
+            }
+            case "NODEJS": {
+                return "javascript";
+            }
+            case "PYTHON3": {
+                return "python3";
+            }
+        }
+        return null;
+    }
+
 }

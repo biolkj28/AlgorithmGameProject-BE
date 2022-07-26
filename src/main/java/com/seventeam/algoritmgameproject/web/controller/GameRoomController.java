@@ -34,19 +34,6 @@ public class GameRoomController {
 
     private final GameService service;
 
-    @GetMapping("/room")
-    @Operation(summary = "Test UI")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = HttpCode.HTTPSTATUS_OK, description = "응답완료"),
-            @ApiResponse(responseCode = HttpCode.HTTPSTATUS_FORBIDDEN, description = "로그인 필요", content = @Content),
-            @ApiResponse(responseCode = HttpCode.HTTPSTATUS_BADREQUEST, description = "요청 데이터 오류", content = @Content),
-            @ApiResponse(responseCode = HttpCode.HTTPSTATUS_SERVERERROR, description = "서버 오류", content = @Content)
-    })
-    public String rooms() {
-        return "/chat/room";
-    }
-
-
     @GetMapping("/rooms")
     @Operation(summary = "방 목록 가져오기 API")
     @ApiResponses(value = {
@@ -64,20 +51,6 @@ public class GameRoomController {
         return new ResponseEntity<>(service.findRooms(langIdx, levelIdx), HttpStatus.OK);
     }
 
-
-    // 방 crud
-    @GetMapping("/room/enter/{roomId}")
-    @Operation(summary = "DetailTest UI")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = HttpCode.HTTPSTATUS_OK, description = "페이지 반환", content = @Content),
-            @ApiResponse(responseCode = HttpCode.HTTPSTATUS_FORBIDDEN, description = "로그인 필요", content = @Content),
-            @ApiResponse(responseCode = HttpCode.HTTPSTATUS_BADREQUEST, description = "요청 데이터 오류", content = @Content),
-            @ApiResponse(responseCode = HttpCode.HTTPSTATUS_SERVERERROR, description = "서버 오류", content = @Content)
-    })
-    public String roomDetail(Model model, @PathVariable String roomId) {
-        model.addAttribute("roomId", roomId);
-        return "chat/roomdetail";
-    }
 
     @PostMapping("/room/create")
     @Operation(summary = "방 생성 API")
