@@ -24,7 +24,7 @@ public class JwtTokenProvider {
     private static final String AUTHORITIES_KEY = "auth";
     private final ObjectMapper mapper;
     private final Key key;
-    private static final long TOKEN_VALID_TIME = 1000L*60*30*2; //60분
+    private static final long TOKEN_VALID_TIME = 1000L*60*30*2*5; //5시간
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);

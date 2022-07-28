@@ -23,7 +23,6 @@ public class SubAndDisconnectListener implements ApplicationListener<AbstractSub
     public void onApplicationEvent(AbstractSubProtocolEvent event) {
 
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
-        System.out.println("COMMAND: " + accessor.getCommand());
 
         String destination = Optional.ofNullable(accessor.getDestination()).orElse("notFoundRoomId");
         String roomId = getRoomId(destination);
@@ -32,14 +31,15 @@ public class SubAndDisconnectListener implements ApplicationListener<AbstractSub
         if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
             //유저 정보 전송 , 구독 주소 변경
             log.info("방:{},입장:{}", roomId, username);
-            if (service.isParticipant(roomId, username) && destination.equals("/topic/game/room/"+roomId)) {
+            if (service.isParticipant(roomId, username) && destination.equals("/topic/game/room/" + roomId)) {
                 log.info("Connect User: {}", username);
                 service.sendToMyUserInfo(roomId, username);
             }
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) {
-            log.info("퇴장:{}", username);
-            log.info("Disconnect username: {}", username);
-            if(repository.notYetExit(username)){
+
+            if (username != null && repository.notYetExit(username)) {
+                log.info("퇴장:{}", username);
+                log.info("Disconnect username: {}", username);
                 service.disconnectEvent(username);
             }
 

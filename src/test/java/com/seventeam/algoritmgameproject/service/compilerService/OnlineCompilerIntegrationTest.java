@@ -1,19 +1,10 @@
 package com.seventeam.algoritmgameproject.service.compilerService;
 
 
-import lombok.extern.slf4j.Slf4j;
-
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-
-import javax.script.ScriptException;
-
 //@SpringBootTest
-@Slf4j
-public class OnlineCompilerIntegrationTest {
-
+//@Slf4j
+//public class OnlineCompilerIntegrationTest {
+//
 //
 //    @Autowired
 //    private TestCaseDslRepository repository;
@@ -25,10 +16,10 @@ public class OnlineCompilerIntegrationTest {
 //
 //    @Autowired
 //    CompilerService compilerService;
-
-    @Test
-    @DisplayName("자바 컴파일 테스트")
-    void 자바() {
+//
+//    @Test
+//    @DisplayName("자바 컴파일 테스트")
+//    void 자바() {
 //        GeneratedJavaTemplateImpTest java = new GeneratedJavaTemplateImpTest(repository);
 //
 //        log.info(service.compile(template.compileCode(QuestionsStr.code1, 125L),Language.JAVA));
@@ -41,11 +32,11 @@ public class OnlineCompilerIntegrationTest {
 //        log.info(service.compile(compileCode(QuestionsStr.code8,209L)));
 //        log.info(service.compile(compileCode(QuestionsStr.code9,222L)));
 
-    }
+// }
 
-    @Test
-    @DisplayName("자바스크립트 코드 문자열 추가 확인 테스트")
-    void 자바스크립트문자열추가() throws InterruptedException, ScriptException {
+//  @Test
+//  @DisplayName("자바스크립트 코드 문자열 추가 확인 테스트")
+//   void 자바스크립트문자열추가() throws InterruptedException, ScriptException {
 //        GeneratedJavascriptTemplateImpTest js = new GeneratedJavascriptTemplateImpTest(repository);
 //
 //        compile(js.compileCode(QuestionStrToJS.code1, 125L));
@@ -60,9 +51,9 @@ public class OnlineCompilerIntegrationTest {
 //        log.info(js.compileCode(QuestionStrToJS.code7, 196L));
 //        log.info(js.compileCode(QuestionStrToJS.code8, 209L));
 //        log.info(js.compileCode(QuestionStrToJS.code9, 222L));
-    }
+//   }
 
-    public void compile(String codeStr) throws InterruptedException {
+//   public void compile(String codeStr) throws InterruptedException {
 //        try (Context context = Context.create("js")) {
 //            Value js = context.eval("js", codeStr);
 //            System.out.println("값:" + js.toString());
@@ -70,11 +61,11 @@ public class OnlineCompilerIntegrationTest {
 //            System.out.println(e.getMessage());
 //        }
 
-    }
+//   }
 
-    @Test
-    @DisplayName("자바스크립트 컴파일 테스트")
-    void 자바스크립트() {
+//   @Test
+//  @DisplayName("자바스크립트 컴파일 테스트")
+//   void 자바스크립트() {
 //        GeneratedJavascriptTemplateImpTest js = new GeneratedJavascriptTemplateImpTest(repository);
 //
 //        log.info(service.compile(js.compileCode(QuestionStrToJS.code1, 125L), Language.NODEJS));
@@ -87,11 +78,11 @@ public class OnlineCompilerIntegrationTest {
 //        log.info(service.compile(js.compileCode(QuestionStrToJS.code8, 209L), Language.NODEJS));
 //        log.info(service.compile(js.compileCode(QuestionStrToJS.code9, 222L), Language.NODEJS));
 
-    }
+//    }
 
-    @Test
-    @DisplayName("파이썬 컴파일 코드 문자열 확인 테스트")
-    void 파이썬코드템플릿() throws InterruptedException {
+//   @Test
+//   @DisplayName("파이썬 컴파일 코드 문자열 확인 테스트")
+//   void 파이썬코드템플릿() throws InterruptedException {
 //        GeneratedPythonTemplateImpTest py = new GeneratedPythonTemplateImpTest(repository);
 //        compile(py.compileCode(QuestionStrToPython.code1, 125L));
 //        log.info(py.compileCode(QuestionStrToPython.code1, 125L));
@@ -103,11 +94,11 @@ public class OnlineCompilerIntegrationTest {
 //        log.info(py.compileCode(QuestionStrToPython.code7, 196L));
 //        log.info(py.compileCode(QuestionStrToPython.code8, 209L));
 //        log.info(py.compileCode(QuestionStrToPython.code9, 222L));
-    }
+//   }
 
-    @Test
-    @DisplayName("파이썬 컴파일 테스트")
-    void 파이썬() {
+//   @Test
+//   @DisplayName("파이썬 컴파일 테스트")
+//    void 파이썬() {
 
 //
 //          GeneratedPythonTemplateImpTest py = new GeneratedPythonTemplateImpTest(repository);
@@ -121,35 +112,34 @@ public class OnlineCompilerIntegrationTest {
 //        log.info(service.compile(py.compileCode(QuestionStrToPython.code8, 209L), Language.PYTHON3));
 //        log.info(service.compile(py.compileCode(QuestionStrToPython.code9, 222L), Language.PYTHON3));
 
-    }
-//
+//   }
+
 //    @Test
 //    @DisplayName("오류 출력 테스트")
 //    void completePer() {
 //        String roomId1 = UUID.randomUUID().toString();
-//        String roomId2 = UUID.randomUUID().toString();
-//        String roomId3 = UUID.randomUUID().toString();
+////        String roomId2 = UUID.randomUUID().toString();
+////        String roomId3 = UUID.randomUUID().toString();
 //        long questionId = 1L;
 //        CompileRequestDto dto0 = new CompileRequestDto(roomId1, questionId, 0, QuestionsStr.code1);
-//        CompileRequestDto dto1 = new CompileRequestDto(roomId2, questionId, 1, QuestionStrToJS.code1);
-//        CompileRequestDto dto2 = new CompileRequestDto(roomId3, questionId, 2, QuestionStrToPython.code1);
+////        CompileRequestDto dto1 = new CompileRequestDto(roomId2, questionId, 1, QuestionStrToJS.code1);
+////        CompileRequestDto dto2 = new CompileRequestDto(roomId3, questionId, 2, QuestionStrToPython.code1);
 //        User user = User.builder()
 //                .userId("novem")
 //                .avatarUrl("no_info")
 //                .password("1234")
 //                .build();
-//        //CompileRequestDto dto, User user
 //
 //        //자바
 //        String s = compilerService.compileResult(dto0,user).toString();
 //        log.info(s);
-//        //자바스크립트
+//자바스크립트
 //        String s1 = compilerService.compileResult(dto1,user).toString();
 //        log.info(s1);
 //
 //        String s2 = compilerService.compileResult(dto2,user).toString();
 //        log.info(s2);
-//    }
+// }
 
 
 //    public String compileResult(GeneratedTemplate template, Long questionId, Language lang, String codeStr) {
@@ -199,4 +189,4 @@ public class OnlineCompilerIntegrationTest {
 //        }
 //    }
 
-}
+//}

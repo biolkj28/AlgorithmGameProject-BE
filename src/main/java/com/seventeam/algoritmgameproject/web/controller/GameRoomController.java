@@ -47,8 +47,8 @@ public class GameRoomController {
             @Parameter(in = ParameterIn.PATH, name = "langIdx", description = "0:JAVA, 1:JS, 2:PYTHON3"),
             @Parameter(in = ParameterIn.PATH, name = "levelIdx", description = "0:EASY, 1:NORMAL, 2:HARD")
     })
-    public ResponseEntity<?> getRooms(@RequestParam int langIdx, @RequestParam int levelIdx) {
-        return new ResponseEntity<>(service.findRooms(langIdx, levelIdx), HttpStatus.OK);
+    public ResponseEntity<?> getRooms(@RequestParam int langIdx, @RequestParam int levelIdx, @AuthenticationPrincipal UserDetailImpl userDetail) {
+        return new ResponseEntity<>(service.findRooms(langIdx, levelIdx, userDetail.getUser().getUserId()), HttpStatus.OK);
     }
 
 

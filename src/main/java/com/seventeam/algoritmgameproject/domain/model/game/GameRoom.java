@@ -1,15 +1,12 @@
 package com.seventeam.algoritmgameproject.domain.model.game;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.UUID;
 
-@Getter
+@Getter@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GameRoom implements Serializable {
 
@@ -22,15 +19,6 @@ public class GameRoom implements Serializable {
     private String questionLevel;
     @Schema(type = "String", example = "JAVAEASY",description = "서버 이름")
     private String server;
-
-//    @Schema(type = "Long", example = "1",description = "문제 DB ID")
-//    private Long questionId;
-//    @Schema(type = "String", example = "문제1",description = "문제 제목")
-//    private String questionTitle;
-//    @Schema(type = "String", example = "문제",description = "문제")
-//    private String question;
-//    @Schema(type = "String",description = "문제 시작 코드")
-//    private String startTemplate;
 
     @Schema(type = "UserGameInfo",description = "방 생성 유저 정보")
     private UserGameInfo creatorGameInfo;
@@ -45,10 +33,6 @@ public class GameRoom implements Serializable {
         this.questionLevel = questionLevel;
         this.creatorGameInfo = creatorGameInfo;
         this.server = language + questionLevel;
-    }
-
-    public void setCreatorGameInfo(UserGameInfo creatorGameInfo) {
-        this.creatorGameInfo = creatorGameInfo;
     }
 
     public void setEnter() {

@@ -2,15 +2,16 @@ package com.seventeam.algoritmgameproject.web.dto.questions_dto;
 
 
 import com.seventeam.algoritmgameproject.domain.QuestionLevel;
-import com.seventeam.algoritmgameproject.domain.model.questions.TestCase;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.springframework.data.redis.core.RedisHash;
 
+import javax.persistence.Id;
 import java.util.*;
 
-@Getter@Setter @ToString
+@Getter@Setter@ToString
+@RedisHash("QUESTION")
 public class QuestionRedis {
+    @Id
     private Long id;
     private String title;
     private String question;
@@ -21,6 +22,7 @@ public class QuestionRedis {
     private String reference;
     private QuestionLevel level;
     private Map<String, String> templates = new HashMap<>();
-    private Set<TestCase> cases = new LinkedHashSet<>();
+    private List<Long> casesIds = new ArrayList<>();
+
 
 }

@@ -37,7 +37,7 @@ public class GameRoomRepository {
         List<GameRoom> isEnterRooms = new ArrayList<>();
         for (GameRoom value : values) {
             if (value.isEnter()) {
-                //value.questionBlock();
+
                 isEnterRooms.add(value);
             }
         }
@@ -77,7 +77,7 @@ public class GameRoomRepository {
 
         return gameRoom;
     }
-
+    
     public void deleteRoom(String server, String roomId) {
         hashOpsGameRoom.delete(server, roomId);
     }
@@ -85,7 +85,7 @@ public class GameRoomRepository {
     public void changeCreator(GameRoom room, UserGameInfo userGameInfo) {
         room.changeCreator(userGameInfo);
         hashOpsGameRoom.put(room.getServer(), room.getRoomId(), room);
-        log.info("방장 변경 완료:{}",room.getCreatorGameInfo().getPlayerName());
+        log.info("방장 정보 갱신:{}",room.getCreatorGameInfo().getPlayerName());
     }
 
     public void enterAndExitGameRoom(GameRoom room, boolean enter) {

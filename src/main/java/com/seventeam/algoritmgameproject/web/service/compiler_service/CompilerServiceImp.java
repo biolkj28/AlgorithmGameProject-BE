@@ -2,6 +2,10 @@ package com.seventeam.algoritmgameproject.web.service.compiler_service;
 
 import com.seventeam.algoritmgameproject.domain.model.questions.TestCase;
 import com.seventeam.algoritmgameproject.domain.model.login.User;
+import com.seventeam.algoritmgameproject.web.dto.questions_dto.QuestionRedis;
+import com.seventeam.algoritmgameproject.web.dto.questions_dto.TestCaseRedis;
+import com.seventeam.algoritmgameproject.web.repository.game_repository.QuestionsRedisRepository;
+import com.seventeam.algoritmgameproject.web.repository.game_repository.TestCaseRedisRepository;
 import com.seventeam.algoritmgameproject.web.repository.questions_repository.TestCaseDslRepository;
 import com.seventeam.algoritmgameproject.web.dto.compiler_dto.CompileRequestDto;
 import com.seventeam.algoritmgameproject.web.dto.compiler_dto.CompileResultDto;
@@ -10,12 +14,15 @@ import com.seventeam.algoritmgameproject.web.service.game_service.GameProcess;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+
 
 @Slf4j
 @Service
@@ -25,6 +32,8 @@ public class CompilerServiceImp implements CompilerService {
     private final TestCaseDslRepository repository;
     private final JDoodleApi jDoodleApi;
     private final GameProcess service;
+    private final QuestionsRedisRepository questionsRedisRepository;
+    private final TestCaseRedisRepository testCaseRedisRepository;
     private static final Map<String, Boolean> compileRequestMap = new ConcurrentHashMap<>();
 
     @Override
@@ -58,17 +67,19 @@ public class CompilerServiceImp implements CompilerService {
             }
         }
 
-        List<TestCase> testCases = repository.getTestCases(dto.getQuestionId());
+        //List<TestCase> testCases = repository.getTestCases(dto.getQuestionId());
+
         if (template == null) {
             throw new RuntimeException("해당 언어는 지원하지 않습니다");
         }
 
+        List<TestCaseRedis> testCases = getTestCases(dto.getQuestionId());
+        log.info("테스트 케이스 목록:{}",testCases.toString());
         JSONObject compile = Optional
-                .of(jDoodleApi.compile(template.compileCode(dto.getCodeStr(), testCases, dto.getQuestionId()), language))
+                .ofNullable(jDoodleApi.compile(template.compileCode(dto.getCodeStr(), testCases, dto.getQuestionId()), language))
                 .orElseThrow(() -> new RuntimeException("컴파일 실패"));
 
         String output = compile.get("output").toString();
-        log.info(output);
 
         if (output.contains("error") || output.contains("ReferenceError") || output.contains("Traceback")) {
 
@@ -85,7 +96,7 @@ public class CompilerServiceImp implements CompilerService {
     }
 
     @Override
-    public CompileResultDto compileCheckResult(String output, List<TestCase> testCases, Language language, CompileRequestDto dto, User user) {
+    public CompileResultDto compileCheckResult(String output, List<TestCaseRedis> testCases, Language language, CompileRequestDto dto, User user) {
         String[] ans = output.replace("\n", "").split("_");
         int cnt = 0;
         boolean resultBool = true;
@@ -164,5 +175,28 @@ public class CompilerServiceImp implements CompilerService {
                 .build();
     }
 
+    private List<TestCaseRedis>getTestCases(Long questionId){
+        log.info("테스트 케이스 탐색");
+        try {
+            //기본
+            QuestionRedis byId = questionsRedisRepository.findById(questionId).orElseThrow(() -> new NullPointerException("데이터 없음"));
+            Iterable<TestCaseRedis> allById = testCaseRedisRepository.findAllById(byId.getCasesIds());
+            List<TestCaseRedis> testcases = new ArrayList<>();
+            allById.forEach(testcases::add);
+            return testcases;
 
+        }catch (NullPointerException e){
+            // 익셉션 시 DB 데이터 가져오기
+            List<TestCase> list = repository.getTestCases(questionId);
+            List<TestCaseRedis> cases = new ArrayList<>();
+
+            for (TestCase testCase : list) {
+                TestCaseRedis redis = new TestCaseRedis();
+                BeanUtils.copyProperties(testCase,redis);
+                redis.setQuestionId(questionId);
+                cases.add(redis);
+            }
+            return cases;
+        }
+    }
 }

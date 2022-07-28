@@ -1,7 +1,9 @@
 package com.seventeam.algoritmgameproject.web.service.game_service;
 
 import com.seventeam.algoritmgameproject.domain.model.game.GameProcessMessage;
+import com.seventeam.algoritmgameproject.domain.model.game.UserGameInfo;
 import com.seventeam.algoritmgameproject.domain.model.login.User;
+import com.seventeam.algoritmgameproject.web.repository.UserRedisRepository;
 import com.seventeam.algoritmgameproject.web.repository.UserRepository;
 import com.seventeam.algoritmgameproject.web.repository.game_repository.GameSessionRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +24,11 @@ import static com.seventeam.algoritmgameproject.domain.model.game.MessageType.*;
 public class GameProcessImp implements GameProcess {
 
     private final UserRepository userRepository;
+    private final UserRedisRepository userRedisRepository;
     private final GameSessionRepository sessionRepository;
     private final ChannelTopic channelTopic;
     private final RedisTemplate<String, Object> redisTemplate;
+
 
     @Override
     public void GameProcessManager(GameProcessMessage.Request request) {
@@ -46,7 +50,7 @@ public class GameProcessImp implements GameProcess {
     @Transactional
     public void exitAndComPile3FailWinMessage(GameProcessMessage.Request request) {
         User user = getUnWrapUser(request.getUsername());
-        String othersSession = Optional.of(sessionRepository.findOthersSession(request.getRoomId(), request.getUsername()))
+        String othersSession = Optional.ofNullable(sessionRepository.findOthersSession(request.getRoomId(), request.getUsername()))
                 .orElseThrow(() -> new NullPointerException("상대방이 나갔습니다."));
 
         //패배 처리
@@ -54,17 +58,17 @@ public class GameProcessImp implements GameProcess {
 
         // 상대 승리 처리
         User others = getUnWrapUser(othersSession);
-        others.win();
-        userRepository.save(others);
+        winProcess(others);
 
         GameProcessMessage.Request winResponse = new GameProcessMessage.Request(
                 WIN,
                 request.getUsername(),
                 request.getRoomId());
         winResponse.setTo(othersSession);
-
         log.info("전송:{}", winResponse.getTo());
         redisTemplate.convertAndSend(channelTopic.getTopic(), winResponse);
+
+
     }
 
     @Override
@@ -72,6 +76,7 @@ public class GameProcessImp implements GameProcess {
     public void timeoutMessage(GameProcessMessage.Request request) {
         User user = getUnWrapUser(request.getUsername());
         lose(user);
+
     }
 
     @Override
@@ -85,19 +90,18 @@ public class GameProcessImp implements GameProcess {
 
     @Override
     public void sendProcessMessage(GameProcessMessage.Request request) {
-        String otherUserId = Optional.of(sessionRepository.findOthersSession(request.getRoomId(), request.getUsername()))
-                .orElseThrow(() -> new NullPointerException("상대방이 나갔습니다."));
-
-        request.setTo(otherUserId);
-        redisTemplate.convertAndSend(channelTopic.getTopic(), request);
-
+        String otherUserId = sessionRepository.findOthersSession(request.getRoomId(), request.getUsername());
+        if (otherUserId != null) {
+            request.setTo(otherUserId);
+            redisTemplate.convertAndSend(channelTopic.getTopic(), request);
+        }
     }
 
     @Transactional
     public void winAndOtherLoseProcess(String roomId, User user) {
         winProcess(user);
-        loseMessage(user.getUserId(), roomId);
         loseProcess(roomId, user);
+        loseMessage(user.getUserId(), roomId);
     }
 
     @Override
@@ -105,22 +109,34 @@ public class GameProcessImp implements GameProcess {
     public void lose(User user) {
         //본인 패배 처리
         user.lose();
-        userRepository.save(user);
+        User save = userRepository.save(user);
+        renewUserInfo(save);
+
+
     }
 
     public void winProcess(User user) {
-        User winUser = userRepository.findByUserId(user.getUserId()).orElseThrow(() -> new NullPointerException("없는 유저 입니다."));
+        User winUser = getUnWrapUser(user.getUserId());
         winUser.win();
-        userRepository.save(winUser);
+        User save = userRepository.save(winUser);
+        renewUserInfo(save);
+
     }
 
     public void loseProcess(String roomId, User user) {
         String othersSession = sessionRepository.findOthersSession(roomId, user.getUserId());
-        User loseUser = userRepository.findByUserId(othersSession).orElseThrow(() -> new NullPointerException("없는 유저 입니다."));
+        User loseUser = getUnWrapUser(othersSession);
         loseUser.lose();
-        userRepository.save(loseUser);
+        User save = userRepository.save(loseUser);
+        renewUserInfo(save);
     }
 
+    public void renewUserInfo(User user) {
+        UserGameInfo userInfo = userRedisRepository.findUser(user.getUserId());
+        userInfo.setWinCnt(user.getWinCnt());
+        userInfo.setLoseCnt(user.getLoseCnt());
+        userRedisRepository.saveOrUpdateUserGameInfoCache(userInfo);
+    }
 
     @Override
     @Transactional(readOnly = true)

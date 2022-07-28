@@ -1,7 +1,7 @@
 package com.seventeam.algoritmgameproject.web.service.compiler_service.generatedTemplate;
 
-import com.seventeam.algoritmgameproject.domain.model.questions.TestCase;
 
+import com.seventeam.algoritmgameproject.web.dto.questions_dto.TestCaseRedis;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ public class GeneratedPython3TemplateImp implements GeneratedTemplate {
     private final RedisTemplate<String, String> redisTemplate;
     @Override
     @Transactional
-    public String compileCode(String codeStr, List<TestCase> testCases,Long questionId) {
+    public String compileCode(String codeStr, List<TestCaseRedis> testCases, Long questionId) {
 
         if (codeStr.contains("print")) {
             throw new IllegalArgumentException("출력문을 작성하지 마세요!");
@@ -51,7 +51,7 @@ public class GeneratedPython3TemplateImp implements GeneratedTemplate {
 
     // 메인 메소드 추가, 변수 추가, 출력문 추가
     @Override
-    public String addTestCode(List<TestCase> testCases) {
+    public String addTestCode(List<TestCaseRedis> testCases) {
         StringBuilder buffer = new StringBuilder(50);
         generatedTemplate(buffer, testCases);
         return buffer.toString();
@@ -59,7 +59,7 @@ public class GeneratedPython3TemplateImp implements GeneratedTemplate {
 
     //인자 개수에 따른 메서드 선택 메서드
     @Override
-    public void generatedTemplate(StringBuilder variable, List<TestCase> testCases) {
+    public void generatedTemplate(StringBuilder variable, List<TestCaseRedis> testCases) {
         String typeStr = testCases.get(0).getType();
         //같은 인자가 복수 개일 때
         if (typeStr.contains("_")) {
@@ -74,12 +74,12 @@ public class GeneratedPython3TemplateImp implements GeneratedTemplate {
 
     // 같은 타입 문자열 복수개 일 때 변수 및 초기화 문자열 생성
     @Override
-    public void generatedAboutSingleParam(StringBuilder variable, List<TestCase> testCases) {
+    public void generatedAboutSingleParam(StringBuilder variable, List<TestCaseRedis> testCases) {
 
         int initVarName = 97;
         int num = 0;
 
-        for (TestCase testCase : testCases) {
+        for (TestCaseRedis testCase : testCases) {
             List<String> varList = new ArrayList<>();
             String params = testCase.getParams();
             String typeStr = testCase.getType();
@@ -104,11 +104,11 @@ public class GeneratedPython3TemplateImp implements GeneratedTemplate {
 
     // 같은 타입 문자열 복수개 일 때 변수 및 초기화 문자열 생성
     @Override
-    public void generatedAboutSameMultiParam(StringBuilder variable, List<TestCase> testCases) {
+    public void generatedAboutSameMultiParam(StringBuilder variable, List<TestCaseRedis> testCases) {
         int initVarName = 97;
         int num = 0;
 
-        for (TestCase testCase : testCases) {
+        for (TestCaseRedis testCase : testCases) {
             List<String> varList = new ArrayList<>();
             String params = testCase.getParams();
             String typeStr = testCase.getType();
@@ -150,7 +150,6 @@ public class GeneratedPython3TemplateImp implements GeneratedTemplate {
 
     }
 
-    // ex) System.out.println(Arrays.toString(s.solution(a,b)) 문자열 생성
     @Override
     public void generatedOut(StringBuilder out, List<String> varList, String ansType) {
 

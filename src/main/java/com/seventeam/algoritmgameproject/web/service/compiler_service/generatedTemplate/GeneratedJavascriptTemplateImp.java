@@ -1,6 +1,6 @@
 package com.seventeam.algoritmgameproject.web.service.compiler_service.generatedTemplate;
 
-import com.seventeam.algoritmgameproject.domain.model.questions.TestCase;
+import com.seventeam.algoritmgameproject.web.dto.questions_dto.TestCaseRedis;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -18,7 +18,7 @@ public class GeneratedJavascriptTemplateImp implements GeneratedTemplate {
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
-    public String compileCode(String codeStr, List<TestCase> testCases,Long questionId) {
+    public String compileCode(String codeStr, List<TestCaseRedis> testCases, Long questionId) {
 
         if(codeStr.contains("console.log")){
             throw new IllegalArgumentException("출력문을 작성하지 마세요!");
@@ -54,14 +54,14 @@ public class GeneratedJavascriptTemplateImp implements GeneratedTemplate {
     }
 
     @Override
-    public String addTestCode(List<TestCase> testCases) {
+    public String addTestCode(List<TestCaseRedis> testCases) {
         StringBuilder buffer = new StringBuilder(50);
         generatedTemplate(buffer, testCases);
         return buffer.toString();
     }
 
     @Override
-    public void generatedTemplate(StringBuilder variable, List<TestCase> testCases) {
+    public void generatedTemplate(StringBuilder variable, List<TestCaseRedis> testCases) {
         String typeStr = testCases.get(0).getType();
         //같은 인자가 복수 개일 때
         if (typeStr.contains("_")) {
@@ -75,11 +75,11 @@ public class GeneratedJavascriptTemplateImp implements GeneratedTemplate {
     }
 
     @Override
-    public void generatedAboutSingleParam(StringBuilder variable, List<TestCase> testCases) {
+    public void generatedAboutSingleParam(StringBuilder variable, List<TestCaseRedis> testCases) {
         int initVarName = 97;
         int num = 0;
 
-        for (TestCase testCase : testCases) {
+        for (TestCaseRedis testCase : testCases) {
             List<String> varList = new ArrayList<>();
             String params = testCase.getParams();
             String typeStr = testCase.getType();
@@ -102,11 +102,11 @@ public class GeneratedJavascriptTemplateImp implements GeneratedTemplate {
     }
 
     @Override
-    public void generatedAboutSameMultiParam(StringBuilder variable, List<TestCase> testCases) {
+    public void generatedAboutSameMultiParam(StringBuilder variable, List<TestCaseRedis> testCases) {
         int initVarName = 97;
         int num = 0;
 
-        for (TestCase testCase : testCases) {
+        for (TestCaseRedis testCase : testCases) {
             ArrayList<String> varList = new ArrayList<>();
             String params;
             params = testCase.getParams();

@@ -44,7 +44,6 @@ public class JDoodleApi {
             res = responseEntity.getBody();
 
 
-
         } catch (HttpClientErrorException e) {
             log.info(e.getMessage(),"JDoodle Error: ");
 

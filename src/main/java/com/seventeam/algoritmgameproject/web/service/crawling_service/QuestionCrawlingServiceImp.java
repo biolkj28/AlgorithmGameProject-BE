@@ -14,6 +14,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.PostConstruct;
 import java.util.*;
 
@@ -45,7 +46,7 @@ public class QuestionCrawlingServiceImp implements QuestionCrawlingService {
             //상
             "https://programmers.co.kr/learn/courses/30/lessons/68935",
             "https://programmers.co.kr/learn/courses/30/lessons/12906",
-            "https://programmers.co.kr/learn/courses/30/lessons/77484"
+            // "https://programmers.co.kr/learn/courses/30/lessons/77484"
 
     };
 
@@ -83,7 +84,7 @@ public class QuestionCrawlingServiceImp implements QuestionCrawlingService {
             Question question = uploadQuestion(QUESTION_URL[i], level);
 
             //해당 문제 테스트케이스 생성(1~10)
-           Set<TestCase> testCases = solutionService.generatedTestCases(i);
+            Set<TestCase> testCases = solutionService.generatedTestCases(i);
             for (TestCase atomic : testCases) {
                 question.add(atomic);
                 log.info(atomic.toString());
@@ -92,6 +93,7 @@ public class QuestionCrawlingServiceImp implements QuestionCrawlingService {
         }
         repository.saveAll(list);
     }
+
     @Override
     public void initQuestionIdByLevel() {
 
@@ -128,67 +130,54 @@ public class QuestionCrawlingServiceImp implements QuestionCrawlingService {
                     isGetQuestions = false;
 
                     title = driver.findElement(By.xpath("//*[@id=\"tab\"]/li")).getText();
-                    if (!questionUrl.equals(QUESTION_URL[9])) {
-                        if (questionUrl.equals(QUESTION_URL[5])) {
-                            questionDescription = getQuestion6();
-                        } else if (questionUrl.equals(QUESTION_URL[8])) {
-                            questionDescription = getQuestion9();
-                        } else {
-                            questionDescription = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/p[1]")).getText();
-                        }
 
-                        if (questionUrl.equals(QUESTION_URL[8])) {
-                            limitation = getQuestion9Limitation();
-                        } else {
-                            limitation = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/ul")).getText();
-                        }
-
-
-                        try {
-                            inOutExHead = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/table/thead")).getText();
-                            inOutEx = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/table/tbody")).getText();
-                        } catch (NoSuchElementException e) {
-                            inOutExHead = "";
-                            inOutEx = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/p[2]")).getText();
-                        }
-
-
-                        try {
-                            if (questionUrl.equals(QUESTION_URL[5]) || questionUrl.equals(QUESTION_URL[8])) {
-                                inOutExDescription = "No Info";
-                            } else if (questionUrl.equals(QUESTION_URL[7])) {
-                                inOutExDescription = getQuestion8InoutDescription();
-                            } else {
-                                inOutExDescription = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/p[2]")).getText();
-                            }
-                        } catch (NoSuchElementException e) {
-                            inOutExDescription = "No Info";
-                        }
-
-                        try {
-                            if (questionUrl.equals(QUESTION_URL[7]) || questionUrl.equals(QUESTION_URL[8])) {
-                                reference = "No Info";
-                            } else {
-                                reference = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/ul[2]")).getText();
-                            }
-
-                        } catch (NoSuchElementException e) {
-                            reference = "No Info";
-                        }
-                    }else{
-                        String []question10Data = question10Template();
-                        //String[]{question, limitation, inOutExHead, inOutEx,inOutExDescription, reference};
-                        questionDescription = question10Data[0];
-                        //제한 조건
-                        limitation = question10Data[1];
-                        //입출력 예
-                        inOutExHead = question10Data[2];
-                        inOutEx = question10Data[3];
-                        //입출력 예 설명
-                        inOutExDescription = question10Data[4];
-                        //참고 사항
-                        reference = question10Data[5];
+                    if (questionUrl.equals(QUESTION_URL[5])) {
+                        questionDescription = getQuestion6();
+                    } else if (questionUrl.equals(QUESTION_URL[8])) {
+                        questionDescription = getQuestion9();
+                    } else {
+                        questionDescription = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/p[1]")).getText();
                     }
+
+                    if (questionUrl.equals(QUESTION_URL[8])) {
+                        limitation = getQuestion9Limitation();
+                    } else {
+                        limitation = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/ul")).getText();
+                    }
+
+
+                    try {
+                        inOutExHead = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/table/thead")).getText();
+                        inOutEx = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/table/tbody")).getText();
+                    } catch (NoSuchElementException e) {
+                        inOutExHead = "";
+                        inOutEx = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/p[2]")).getText();
+                    }
+
+
+                    try {
+                        if (questionUrl.equals(QUESTION_URL[5]) || questionUrl.equals(QUESTION_URL[8])) {
+                            inOutExDescription = "No Info";
+                        } else if (questionUrl.equals(QUESTION_URL[7])) {
+                            inOutExDescription = getQuestion8InoutDescription();
+                        } else {
+                            inOutExDescription = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/p[2]")).getText();
+                        }
+                    } catch (NoSuchElementException e) {
+                        inOutExDescription = "No Info";
+                    }
+
+                    try {
+                        if (questionUrl.equals(QUESTION_URL[7]) || questionUrl.equals(QUESTION_URL[8])) {
+                            reference = "No Info";
+                        } else {
+                            reference = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/ul[2]")).getText();
+                        }
+
+                    } catch (NoSuchElementException e) {
+                        reference = "No Info";
+                    }
+
                 }
 
                 //코드 태그 목록 추출, 합치기
@@ -330,7 +319,7 @@ public class QuestionCrawlingServiceImp implements QuestionCrawlingService {
         String inOutEx = driver.findElement(By.xpath("//*[@id=\"tour2\"]/div/div/table[3]/tbody")).getText();
         String reference = driver.findElement(By.xpath("//*[@id=\"fn1\"]/p")).getText();
         String inOutExDescription = "No info";
-        return new String[]{question, limitation, inOutExHead, inOutEx,inOutExDescription, reference};
+        return new String[]{question, limitation, inOutExHead, inOutEx, inOutExDescription, reference};
     }
 
 

@@ -1,8 +1,6 @@
 package com.seventeam.algoritmgameproject.domain.model.questions;
 
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,7 +17,6 @@ public class TestCase {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "QUESTION_ID")
     @ToString.Exclude
-    @JsonIgnore
     private Question question;
 
     @Column(nullable = false, length = 5000)

@@ -1,10 +1,12 @@
 package com.seventeam.algoritmgameproject.web.service.login_service;
 
+import com.seventeam.algoritmgameproject.domain.model.game.UserGameInfo;
 import com.seventeam.algoritmgameproject.domain.model.login.GithubProfile;
 import com.seventeam.algoritmgameproject.domain.model.login.OAuthToken;
 import com.seventeam.algoritmgameproject.domain.model.login.User;
 import com.seventeam.algoritmgameproject.security.JwtTokenProvider;
 import com.seventeam.algoritmgameproject.web.dto.login_dto.UserResponseDto;
+import com.seventeam.algoritmgameproject.web.repository.UserRedisRepository;
 import com.seventeam.algoritmgameproject.web.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,21 +32,24 @@ public class GithubLoginService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
     private final JwtTokenProvider provider;
+    private final UserRedisRepository redisRepository;
 
     private final String client_id;
 
     private final String client_secret;
 
     public GithubLoginService(
+
             PasswordEncoder passwordEncoder,
             UserRepository repository,
             JwtTokenProvider provider,
-            @Value("${client.id}")String client_id,
+            UserRedisRepository redisRepository, @Value("${client.id}")String client_id,
             @Value("${client.secret}")String client_secret) {
 
         this.passwordEncoder = passwordEncoder;
         this.repository = repository;
         this.provider = provider;
+        this.redisRepository = redisRepository;
         this.client_id = client_id;
         this.client_secret = client_secret;
     }
@@ -78,6 +83,15 @@ public class GithubLoginService {
             } else {
                 user = profileToUser(profile);
             }
+
+            UserGameInfo userGameInfo = UserGameInfo.builder()
+                    .playerName(user.getUserId())
+                    .profileUrl(user.getAvatarUrl())
+                    .winCnt(user.getWinCnt())
+                    .loseCnt(user.getLoseCnt()).build();
+
+            redisRepository.saveOrUpdateUserGameInfoCache(userGameInfo);
+
             return UserResponseDto.builder()
                     .token(provider.createToken(user))
                     .username(user.getUserId())
