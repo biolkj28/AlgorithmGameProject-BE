@@ -43,8 +43,8 @@ public class GithubLoginService {
             PasswordEncoder passwordEncoder,
             UserRepository repository,
             JwtTokenProvider provider,
-            UserRedisRepository redisRepository, @Value("${client.id}")String client_id,
-            @Value("${client.secret}")String client_secret) {
+            UserRedisRepository redisRepository, @Value("${client.id}") String client_id,
+            @Value("${client.secret}") String client_secret) {
 
         this.passwordEncoder = passwordEncoder;
         this.repository = repository;
@@ -55,56 +55,53 @@ public class GithubLoginService {
     }
 
 
-
-
-
-
     @Transactional
     public UserResponseDto getGithubProfile(OAuthToken oAuthToken) {
 
-        try {
-            RestTemplate profileRequestTemplate = new RestTemplate();
-            ResponseEntity<GithubProfile> profileResponse = profileRequestTemplate.exchange(
-                    PROFILE_REQUEST_URL,
-                    HttpMethod.GET,
-                    getProfileRequestEntity(oAuthToken),
-                    GithubProfile.class
-            );
+        RestTemplate profileRequestTemplate = new RestTemplate();
+        ResponseEntity<GithubProfile> profileResponse = profileRequestTemplate.exchange(
+                PROFILE_REQUEST_URL,
+                HttpMethod.GET,
+                getProfileRequestEntity(oAuthToken),
+                GithubProfile.class
+        );
 
-            GithubProfile profile = profileResponse.getBody();
+        GithubProfile profile = profileResponse.getBody();
 
-            assert profile != null;
-            User user;
-            boolean newUser = true;
-            if (repository.existsByUserId(profile.getLogin())) {
-                Optional<User> byUserId = repository.findByUserId(profile.getLogin());
-                user = byUserId.orElseThrow(() -> new NullPointerException("없는 사용자 입니다."));
-                newUser = false;
-            } else {
-                user = profileToUser(profile);
-            }
-
-            UserGameInfo userGameInfo = UserGameInfo.builder()
-                    .playerName(user.getUserId())
-                    .profileUrl(user.getAvatarUrl())
-                    .winCnt(user.getWinCnt())
-                    .loseCnt(user.getLoseCnt()).build();
-
-            redisRepository.saveOrUpdateUserGameInfoCache(userGameInfo);
-
-            return UserResponseDto.builder()
-                    .token(provider.createToken(user))
-                    .username(user.getUserId())
-                    .profile(user.getAvatarUrl())
-                    .winCnt(user.getWinCnt())
-                    .loseCnt(user.getLoseCnt())
-                    .newUser(newUser)
-                    .build();
-
-        } catch (Exception e) {
-            log.info("error: {}", e.getMessage());
-            throw new RuntimeException("사용자 정보 요청 실패");
+        assert profile != null;
+        User user;
+        boolean newUser = true;
+        if (repository.existsByUserId(profile.getLogin())) {
+            Optional<User> byUserId = repository.findByUserId(profile.getLogin());
+            user = byUserId.orElseThrow(() -> new NullPointerException("없는 사용자 입니다."));
+            newUser = false;
+        } else {
+            user = profileToUser(profile);
         }
+
+        if (redisRepository.findUser(user.getUserId()) != null) {
+            redisRepository.deleteUserGameInfoCache(user.getUserId());
+            throw new RuntimeException("이미 로그인 중입니다.\n 로그아웃 됩니다.");
+        }
+
+        UserGameInfo userGameInfo = UserGameInfo.builder()
+                .playerName(user.getUserId())
+                .profileUrl(user.getAvatarUrl())
+                .winCnt(user.getWinCnt())
+                .loseCnt(user.getLoseCnt()).build();
+
+        redisRepository.saveOrUpdateUserGameInfoCache(userGameInfo);
+
+        return UserResponseDto.builder()
+                .token(provider.createToken(user))
+                .username(user.getUserId())
+                .profile(user.getAvatarUrl())
+                .winCnt(user.getWinCnt())
+                .loseCnt(user.getLoseCnt())
+                .newUser(newUser)
+                .build();
+
+
     }
 
     //사용자 정보 얻는 부분

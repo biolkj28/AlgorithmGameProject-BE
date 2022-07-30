@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @Slf4j
-@ControllerAdvice(basePackageClasses = CompilerController.class)
+@ControllerAdvice(assignableTypes = CompilerController.class)
 public class CompilerException {
     @ExceptionHandler(value = {RuntimeException.class})
     public ResponseEntity<Object> compilerException(RuntimeException ex) {

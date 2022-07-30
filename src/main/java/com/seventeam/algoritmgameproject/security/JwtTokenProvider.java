@@ -32,16 +32,20 @@ public class JwtTokenProvider {
         this.mapper = new ObjectMapper();
     }
 
-    public String createToken(User user) throws JsonProcessingException {
+    public String createToken(User user){
+        try {
+            String detail = mapper.writeValueAsString(user);
+            Date now = new Date();
+            return "Bearer " + Jwts.builder()   // 토큰 생성해서 리턴
+                    .setSubject(user.getUserId())
+                    .claim(AUTHORITIES_KEY, detail)
+                    .signWith(key, SignatureAlgorithm.HS256)
+                    .setExpiration(new Date(now.getTime() + TOKEN_VALID_TIME))
+                    .compact();
+        }catch (JsonProcessingException e){
+            throw new RuntimeException("토큰 생성 실패");
+        }
 
-        String detail = mapper.writeValueAsString(user);
-        Date now = new Date();
-        return "Bearer " + Jwts.builder()   // 토큰 생성해서 리턴
-                .setSubject(user.getUserId())
-                .claim(AUTHORITIES_KEY, detail)
-                .signWith(key, SignatureAlgorithm.HS256)
-                .setExpiration(new Date(now.getTime() + TOKEN_VALID_TIME))
-                .compact();
     }
 
 

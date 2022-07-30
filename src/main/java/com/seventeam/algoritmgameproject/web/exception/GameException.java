@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @Slf4j
-@ControllerAdvice(basePackageClasses = {GameRoomController.class, GameController.class})
+@ControllerAdvice(assignableTypes = {GameRoomController.class, GameController.class})
 public class GameException {
 
     //조회 오류

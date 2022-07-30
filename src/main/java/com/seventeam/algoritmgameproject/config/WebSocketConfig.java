@@ -35,6 +35,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws-stomp").setAllowedOriginPatterns("*")
                 .setAllowedOrigins("localhost:3000")// 소켓 연결 요청 URI
+                .setAllowedOrigins("chinda.live")
+                .setAllowedOrigins("www.chinda.live")
                 .setHandshakeHandler(new CustomHandShaker())
                 .withSockJS(); // sock.js를 통하여 낮은 버전의 브라우저에서도 websocket이 동작할수 있게 합니다.
     }
