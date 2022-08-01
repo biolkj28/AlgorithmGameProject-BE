@@ -22,6 +22,14 @@ public class GameException {
                 HttpStatus.INTERNAL_SERVER_ERROR
         );
     }
+    @ExceptionHandler(value = {IllegalStateException.class})
+    public ResponseEntity<Object> isEnter(IllegalStateException ex) {
+        log.error(ex.getMessage(), ex.getCause());
+        return new ResponseEntity<>(
+                ex.getMessage(),
+                HttpStatus.NOT_ACCEPTABLE
+        );
+    }
     @MessageExceptionHandler(value = {Exception.class})
     public void gameException(NullPointerException ex) {
         log.info("메시지 exception check:{}",ex.getMessage());

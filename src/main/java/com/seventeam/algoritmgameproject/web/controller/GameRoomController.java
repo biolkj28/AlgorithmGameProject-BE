@@ -1,11 +1,11 @@
 package com.seventeam.algoritmgameproject.web.controller;
 
 import com.seventeam.algoritmgameproject.config.HttpCode;
+import com.seventeam.algoritmgameproject.web.service.game_service.GameService;
 import com.seventeam.algoritmgameproject.web.service.login_service.UserDetailImpl;
 import com.seventeam.algoritmgameproject.web.dto.game_dto.CreateRoomRequestDto;
 import com.seventeam.algoritmgameproject.web.dto.game_dto.EnterAndExitRoomRequestDto;
 import com.seventeam.algoritmgameproject.domain.model.game.GameRoom;
-import com.seventeam.algoritmgameproject.web.service.game_service.GameService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -21,7 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 

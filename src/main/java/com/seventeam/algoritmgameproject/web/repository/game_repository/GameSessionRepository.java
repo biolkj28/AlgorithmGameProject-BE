@@ -27,7 +27,7 @@ public class GameSessionRepository {
     }
 
     public void saveEnterSession(String roomId, String username, String role) {
-        hashOpsEnterInfo.putIfAbsent(roomId, username, role);
+        hashOpsEnterInfo.put(roomId, username, role);
     }
     public void deleteSession(String roomId, String username){
         hashOpsEnterInfo.delete(roomId, username);

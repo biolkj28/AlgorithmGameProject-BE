@@ -1,6 +1,7 @@
 package com.seventeam.algoritmgameproject.web.service.game_service;
 
 import com.seventeam.algoritmgameproject.domain.model.game.GameProcessMessage;
+import com.seventeam.algoritmgameproject.domain.model.game.MessageType;
 import com.seventeam.algoritmgameproject.domain.model.game.UserGameInfo;
 import com.seventeam.algoritmgameproject.domain.model.login.User;
 import com.seventeam.algoritmgameproject.web.repository.UserRedisRepository;
@@ -26,6 +27,7 @@ public class GameProcessImp implements GameProcess {
     private final UserRepository userRepository;
     private final UserRedisRepository userRedisRepository;
     private final GameSessionRepository sessionRepository;
+    private final GameService gameService;
     private final ChannelTopic channelTopic;
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -38,6 +40,8 @@ public class GameProcessImp implements GameProcess {
             timeoutMessage(request);
         } else if (request.getType().equals(EXIT)) {
             exit(request);
+        }else if(request.getType().equals(FORSTART)){
+            gameService.sendQuestion(request);
         }
     }
 

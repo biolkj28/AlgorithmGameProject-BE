@@ -4,6 +4,7 @@ package com.seventeam.algoritmgameproject.config;
 import com.seventeam.algoritmgameproject.web.service.game_service.RedisSubscriber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -38,6 +39,7 @@ public class RedisConfig {
         redisStandaloneConfiguration.setPassword(redisPwd);
         return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
+
     /**
      * redis에 발행(publish)된 메시지 처리를 위한 리스너 설정
      */
@@ -50,6 +52,7 @@ public class RedisConfig {
         container.addMessageListener(listenerAdapter, channelTopic);
         return container;
     }
+
     @Bean
     public MessageListenerAdapter listenerAdapter(RedisSubscriber subscriber) {
         return new MessageListenerAdapter(subscriber, "sendMessage");

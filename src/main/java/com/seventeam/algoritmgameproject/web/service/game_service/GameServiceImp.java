@@ -1,10 +1,7 @@
 package com.seventeam.algoritmgameproject.web.service.game_service;
 
 import com.seventeam.algoritmgameproject.domain.QuestionLevel;
-import com.seventeam.algoritmgameproject.domain.model.game.GameMessage;
-import com.seventeam.algoritmgameproject.domain.model.game.GameRoom;
-import com.seventeam.algoritmgameproject.domain.model.game.ReadyMessage;
-import com.seventeam.algoritmgameproject.domain.model.game.UserGameInfo;
+import com.seventeam.algoritmgameproject.domain.model.game.*;
 import com.seventeam.algoritmgameproject.domain.model.questions.Question;
 import com.seventeam.algoritmgameproject.domain.model.login.User;
 import com.seventeam.algoritmgameproject.domain.model.questions.TestCase;
@@ -24,8 +21,11 @@ import com.seventeam.algoritmgameproject.web.repository.game_repository.GameSess
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,8 +50,6 @@ public class GameServiceImp implements GameService {
     private final ChannelTopic channelTopic;
     private final RedisTemplate<String, Object> redisTemplate;
     private final GameServiceUtil util;
-
-
     public static final String ROOM_READY = "ROOM_READY";
     private static final ConcurrentMap<String, Integer> readyMap = new ConcurrentHashMap<>();
 
@@ -115,13 +113,42 @@ public class GameServiceImp implements GameService {
                 .orElseThrow(() -> new NullPointerException("해당 방을 찾을 수 없습니다."));
 
         UserGameInfo creator = room.getCreatorGameInfo();
-
-        gameRoomRepository.enterAndExitGameRoom(room, true);
-        // 입장자 세션 저장
-        sessionRepository.saveEnterSession(dto.getRoomId(), user.getUserId(), GameSessionRepository.PARTICIPANT);
-        //연결 해제 시 유저 아이디로 방을 찾기 위해 데이터 저장
-        sessionRepository.saveRoomIdBySession(user.getUserId(), dto.getRoomId());
+        boolean check = saveEnterInfoRedis(room, user);
+        log.info("입장 처리 된 유저:{},처리 여부:{}", user.getUserId(), check);
+        if (!check) {
+            throw new IllegalStateException("정원 초과 입니다.");
+        }
         return creator;
+    }
+
+    @Override
+    public boolean saveEnterInfoRedis(GameRoom room, User user) {
+        boolean check = true;
+        List<Object> execute = redisTemplate.execute(new SessionCallback<List<Object>>() {
+            @Override
+            public List<Object> execute(@NonNull RedisOperations operations) {
+
+                try {
+                    redisTemplate.watch(room.getRoomId());
+                    redisTemplate.multi();
+                    gameRoomRepository.enterAndExitGameRoom(room, true);
+                    // 입장자 세션 저장
+                    sessionRepository.saveEnterSession(room.getRoomId(), user.getUserId(), GameSessionRepository.PARTICIPANT);
+                    //연결 해제 시 유저 아이디로 방을 찾기 위해 데이터 저장
+                    sessionRepository.saveRoomIdBySession(user.getUserId(), room.getRoomId());
+                } catch (Exception e) {
+                    redisTemplate.discard();
+                }
+                return operations.exec();
+            }
+        });
+
+        assert execute != null;
+        if (execute.size() == 0) {
+            return false;
+        } else {
+            return check;
+        }
     }
 
 
@@ -146,12 +173,13 @@ public class GameServiceImp implements GameService {
             String server = gameRoomRepository.findServer(roomId);
             GameRoom roomById = gameRoomRepository.findRoomById(server, roomId);
             exitEvent(roomById, username, role);
+
         }
     }
 
     // 퇴장 처리 메서드
+    @Override
     public void exitEvent(GameRoom room, String username, String role) {
-
         if (username != null && role != null) {
             //중간에 방 나갔을 때 준비 데이터 존재 시 삭제
             boolean existKey = readyMap.containsKey(ROOM_READY + room.getRoomId());
@@ -195,7 +223,7 @@ public class GameServiceImp implements GameService {
                     gameRoomRepository.deleteServerRoomData(room.getRoomId());
 
                 }
-            }else{
+            } else {
                 updateGameRoom(room.getRoomId());
             }
 
@@ -203,15 +231,16 @@ public class GameServiceImp implements GameService {
 
     }
 
+    @Override
     public void updateGameRoom(String roomId) {
         Long cnt = sessionRepository.roomEnterCnt(roomId);
-        if(cnt ==1){
+        if (cnt == 1) {
             String server = gameRoomRepository.findServer(roomId);
             GameRoom roomById = gameRoomRepository.findRoomById(server, roomId);
             String playerName = roomById.getCreatorGameInfo().getPlayerName();
             UserGameInfo userInfo = userRedisRepository.findUser(playerName);
-            gameRoomRepository.changeCreator(roomById,userInfo);
-            log.info("방 정보 갱신 완료, server:{},creator:{},userInfo:{}",server,playerName,userInfo.toString());
+            gameRoomRepository.changeCreator(roomById, userInfo);
+            log.info("방 정보 갱신 완료, server:{},creator:{},userInfo:{}", server, playerName, userInfo.toString());
         }
 
 
@@ -221,20 +250,35 @@ public class GameServiceImp implements GameService {
     @Override
     public void ready(ReadyMessage message) {
 
-        if (!readyMap.containsKey(ROOM_READY + message.getRoomId())) {
-            readyMap.put(ROOM_READY + message.getRoomId(), 1);
-        } else {
-            GameRoom room = gameRoomRepository.findRoomById(message.getServer(), message.getRoomId());
-            QuestionRedis question = randomQuestions(util.getQuestionLevel(room.getQuestionLevel()));
-            message.setQuestionId(question.getId());
-            message.setTitle(question.getTitle());
-            message.setQuestion(question.getQuestion());
-            message.setTemplate(question.getTemplates().get(util.getStartTemplateKey(room.getLanguage())));
+        Integer check = readyMap.putIfAbsent(ROOM_READY + message.getRoomId(), 1);
 
+        if (check != null) {
+            log.info("ALL READY");
+
+            GameRoom room = gameRoomRepository.findRoomById(message.getServer(), message.getRoomId());
+            GameProcessMessage.Request start = new GameProcessMessage.Request(MessageType.FORSTART,"SERVER", room.getRoomId());
+            start.setTo(room.getCreatorGameInfo().getPlayerName());
             //준비 데이터 삭제
-            redisTemplate.convertAndSend(channelTopic.getTopic(), message);
+            redisTemplate.convertAndSend(channelTopic.getTopic(), start);
             readyMap.remove(ROOM_READY + message.getRoomId());
         }
+    }
+
+    @Override
+    public void sendQuestion(GameProcessMessage.Request request) {
+        String server = gameRoomRepository.findServer(request.getRoomId());
+        GameRoom room = gameRoomRepository.findRoomById(server, request.getRoomId());
+        QuestionRedis question = randomQuestions(util.getQuestionLevel(room.getQuestionLevel()));
+        ReadyMessage readyMessage = new ReadyMessage();
+        readyMessage.setSender("SERVER");
+        readyMessage.setRoomId(request.getRoomId());
+        readyMessage.setServer(server);
+        readyMessage.setQuestionId(question.getId());
+        readyMessage.setTitle(question.getTitle());
+        readyMessage.setQuestion(question.getQuestion());
+        readyMessage.setTemplate(question.getTemplates().get(util.getStartTemplateKey(room.getLanguage())));
+
+        redisTemplate.convertAndSend(channelTopic.getTopic(), readyMessage);
     }
 
     @Override
@@ -278,6 +322,7 @@ public class GameServiceImp implements GameService {
     }
 
 
+    @Override
     @Transactional(readOnly = true)
     public QuestionRedis randomQuestions(QuestionLevel level) {
         try {

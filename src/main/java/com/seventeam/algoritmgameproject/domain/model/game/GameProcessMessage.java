@@ -32,10 +32,14 @@ public class GameProcessMessage implements Serializable {
     public static class Response{
         private MessageType type;
         private String msg;
+        private String creator;
 
         public Response(MessageType type) {
             this.type = type;
             this.msg = type.getState();
+        }
+        public void setCreator(String creator){
+            this.creator = creator;
         }
     }
 

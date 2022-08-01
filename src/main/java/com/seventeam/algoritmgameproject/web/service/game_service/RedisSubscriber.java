@@ -2,6 +2,7 @@ package com.seventeam.algoritmgameproject.web.service.game_service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seventeam.algoritmgameproject.domain.model.game.GameProcessMessage;
+import com.seventeam.algoritmgameproject.domain.model.game.MessageType;
 import com.seventeam.algoritmgameproject.web.dto.game_dto.UserAndRoomIdDto;
 import com.seventeam.algoritmgameproject.domain.model.game.GameMessage;
 import com.seventeam.algoritmgameproject.domain.model.game.ReadyMessage;
@@ -43,17 +44,23 @@ public class RedisSubscriber {
             } else if (publishMessage.contains(GAME)) {
 
                 GameMessage roomMessage = objectMapper.readValue(publishMessage, GameMessage.class);
-                sendToUser(roomMessage.getTo(),roomMessage.getRoomId(),roomMessage);
+                sendToUser(roomMessage.getTo(), roomMessage.getRoomId(), roomMessage);
 
             } else if (publishMessage.contains(USERINFO)) {
 
                 UserAndRoomIdDto dto = objectMapper.readValue(publishMessage, UserAndRoomIdDto.class);
-                sendToUser(dto.getTo(),dto.getRoomId(),dto.getInfo());
+                sendToUser(dto.getTo(), dto.getRoomId(), dto.getInfo());
 
-            }else{
+            } else {
                 GameProcessMessage.Request request = objectMapper.readValue(publishMessage, GameProcessMessage.Request.class);
                 GameProcessMessage.Response response = new GameProcessMessage.Response(request.getType());
-                sendToUser(request.getTo(),request.getRoomId(),response);
+                if(request.getType().equals(MessageType.FORSTART)){
+                    response.setCreator(request.getTo());
+                    send(request.getRoomId(), response);
+                }else{
+                    sendToUser(request.getTo(), request.getRoomId(), response);
+                }
+
             }
 
         } catch (Exception e) {
@@ -63,7 +70,7 @@ public class RedisSubscriber {
 
     //구독한 사람에게 send
     public void send(String roomId, Object roomMessage) {
-        if(roomId!=null){
+        if (roomId != null) {
             messagingTemplate.convertAndSend("/topic/game/room/" + roomId, roomMessage);
         }
     }
@@ -72,7 +79,7 @@ public class RedisSubscriber {
     //특정사용자에게 send
     public void sendToUser(String to, String roomId, Object o) {
         log.info("SEND:{}", to);
-        if(to!=null){
+        if (to != null) {
             messagingTemplate.convertAndSendToUser(to, "/queue/game/codeMessage/" + roomId, o);
         }
     }

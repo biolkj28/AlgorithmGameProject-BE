@@ -7,7 +7,9 @@ public enum MessageType {
     WIN("승리"),
     FAIL("상대 컴파일 실패"),
     LOSE("패배"),
-    EXIT("상대방이 나갔습니다.");
+    EXIT("상대방이 나갔습니다."),
+
+    FORSTART("FORSTART");
 
 
     private final String state;

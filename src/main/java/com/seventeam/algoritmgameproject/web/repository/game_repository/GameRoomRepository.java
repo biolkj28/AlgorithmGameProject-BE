@@ -91,14 +91,14 @@ public class GameRoomRepository {
     public void enterAndExitGameRoom(GameRoom room, boolean enter) {
         if (enter) {
             room.setEnter();
-            hashOpsGameRoom.putIfAbsent(
+            hashOpsGameRoom.put(
                     room.getServer(),
                     room.getRoomId(),
                     room
             );
         } else {
             room.setExit();
-            hashOpsGameRoom.putIfAbsent(
+            hashOpsGameRoom.put(
                     room.getServer(),
                     room.getRoomId(),
                     room
