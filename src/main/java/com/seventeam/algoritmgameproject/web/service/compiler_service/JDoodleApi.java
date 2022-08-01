@@ -20,7 +20,8 @@ public class JDoodleApi {
     public JSONObject compile(String codeStr,Language language) {
         String url = "https://api.jdoodle.com/v1/execute";
         String clientId = "586fb20a7ae6a3c3aae8f290321d36f1"; //Replace with your client ID
-        String clientSecret = "e8d153f387750de0adf43b141c4fa0353d6c040a47b8d41a3f3fbc19d836949e"; //Replace with your client Secret
+        String clientSecret = "dc1abcf9dffb57cdfee0c2a26cb68c85c618fe32f9b503bccf60966b4814597e"; //Replace with your client Secret
+
         String versionIndex = "0";
         JSONObject res = new JSONObject();
         try {

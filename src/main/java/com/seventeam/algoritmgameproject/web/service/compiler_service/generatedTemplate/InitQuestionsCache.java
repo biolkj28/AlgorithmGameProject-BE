@@ -57,15 +57,17 @@ public class InitQuestionsCache {
             List<Long> casesIds = new ArrayList<>();
 
             // 테스트 케이스 저장
+            int cnt =1;
             for (TestCase aCase : question.getCases()) {
+                    if(cnt==11)break;
+                    casesIds.add(aCase.getId());
 
-                casesIds.add(aCase.getId());
-
-                TestCaseRedis tc = new TestCaseRedis();
-                tc.setQuestionId(aCase.getId());
-                BeanUtils.copyProperties(aCase, tc);
-                TestCaseRedis save = testCaseRedisRepository.save(tc);
-                log.info("testCase:{}", save);
+                    TestCaseRedis tc = new TestCaseRedis();
+                    tc.setQuestionId(qs.getId());
+                    BeanUtils.copyProperties(aCase, tc);
+                    TestCaseRedis save = testCaseRedisRepository.save(tc);
+                    log.info("testCase:{}", save);
+                    cnt++;
 
             }
             qs.setCasesIds(casesIds);

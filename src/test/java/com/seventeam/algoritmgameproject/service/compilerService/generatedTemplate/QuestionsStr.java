@@ -11,7 +11,7 @@ public class QuestionsStr {
             "    }\n" +
             "}";
     public static final String code2 = "public class Solion {\n" +
-            "    public int solution(String y) {\n" +
+            "    public int solution(String s) {\n" +
             "        int answer = 0;\n" +
             "        int result = 0;\n" +
             "        boolean sign = true;\n" +
@@ -58,7 +58,7 @@ public class QuestionsStr {
             "        return answer<0?(answer*-1):0;\n" +
             "    }\n" +
             "}";
-    static final String code6 = "public class Solution {\n" +
+    public static final String code6 = "public class Solution {\n" +
             "    \n" +
             "    public String solution(int a, int b) {\n" +
             "       \n" +
@@ -75,7 +75,7 @@ public class QuestionsStr {
             "        return weekOfDays[idx].toString();\n" +
             "    }\n" +
             "}";
-    static final String code7 = "public class Solution {\n" +
+    public static final String code7 = "public class Solution {\n" +
             "    boolean solution(String s) {\n" +
             "        boolean answer = true;\n" +
             "        int cnt =0;\n" +
@@ -92,7 +92,7 @@ public class QuestionsStr {
             "        else return false;\n" +
             "    }\n" +
             "}";
-    static final String code8 = "public class Solution {\n" +
+    public static final String code8 = "public class Solution {\n" +
             "    public int solution(int n) {\n" +
             "        int answer = 0;\n" +
             "        int num = 1;\n" +
@@ -111,7 +111,7 @@ public class QuestionsStr {
             "        return answer;\n" +
             "    }\n" +
             "}";
-    static final String code9 = "import java.util.*;\n" +
+    public static final String code9 = "import java.util.*;\n" +
             "\n" +
             "public class Solution {\n" +
             "    public int[] solution(int []arr) {\n" +

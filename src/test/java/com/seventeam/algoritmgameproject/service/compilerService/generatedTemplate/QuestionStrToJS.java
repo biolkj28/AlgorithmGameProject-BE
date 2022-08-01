@@ -2,7 +2,7 @@ package com.seventeam.algoritmgameproject.service.compilerService.generatedTempl
 
 public class QuestionStrToJS {
     public static final String code1 = "function solution(s) {\n" +
-            "    return s.substr(Math.ceil(s.length / 2) - 1, s.length() % 2 === 0 ? 2 : 1);\n" +
+            "    return s.substr(Math.ceil(s.length / 2) - 1, s.length % 2 === 0 ? 2 : 1);\n" +
             "}";
     public static final String code2 = "function solution(str){\n" +
             "  return str/1\n" +

@@ -22,7 +22,7 @@ public class GeneratedJavaTemplateImp implements GeneratedTemplate {
     @Override
     @Transactional
     public String compileCode(String codeStr, List<TestCaseRedis> testCases, Long questionId) {
-
+        log.info(testCases.toString());
         if(codeStr.contains("main")){
             throw new IllegalArgumentException("출력문을 작성하지 마세요!");
         }

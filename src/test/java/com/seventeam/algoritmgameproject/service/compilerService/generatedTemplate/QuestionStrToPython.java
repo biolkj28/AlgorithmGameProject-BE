@@ -17,7 +17,7 @@ public class QuestionStrToPython {
             "    return result";
     public static final String code3 = "def hide_numbers(s):\n" +
             "    return \"*\"*(len(s)-4) + s[-4:]";
-    public static final String code4 = "def number_generator(y, n):\n" +
+    public static final String code4 = "def number_generator(x, n):\n" +
             "    # 함수를 완성하세요\n" +
             "    return [i * x + x for i in range(n)]\n";
     public static final String code5 = "def solution(price, money, count):\n" +
@@ -42,5 +42,5 @@ public class QuestionStrToPython {
             "    for i in s:\n" +
             "        if a[-1:] == [i]: continue\n" +
             "        a.append(i)\n" +
-            "    return a\nprint(3)\nprint(3)\nprint(3)\nprint(3)\nprint(3)";
+            "    return a\n";
 }

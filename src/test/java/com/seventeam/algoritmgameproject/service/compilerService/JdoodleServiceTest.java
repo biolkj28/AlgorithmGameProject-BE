@@ -5,9 +5,11 @@ import com.seventeam.algoritmgameproject.service.compilerService.generatedTempla
 import com.seventeam.algoritmgameproject.service.compilerService.generatedTemplate.QuestionStrToPython;
 import com.seventeam.algoritmgameproject.service.compilerService.generatedTemplate.QuestionsStr;
 import com.seventeam.algoritmgameproject.service.crawlingService.Solution;
+import com.seventeam.algoritmgameproject.web.service.compiler_service.CompilerService;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -149,6 +151,10 @@ public class JdoodleServiceTest {
 //        str.delete(start, str.length()-1);
 //        System.out.println(str);
     }
+
+    @Autowired
+    private CompilerService service;
+
     @Test
     @DisplayName("암거나")
     void del(){
