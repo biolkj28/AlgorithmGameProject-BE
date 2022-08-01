@@ -21,7 +21,7 @@ public interface GameService {
     UserGameInfo enterRoom(EnterAndExitRoomRequestDto dto, User user);
 
     //Redis 입장 처리
-    boolean saveEnterInfoRedis(GameRoom room, User user);
+    void saveEnterInfoRedis(GameRoom room, User user);
 
     // 방 퇴장 메서드
     void exitRoom(String server, String roomId, User user);

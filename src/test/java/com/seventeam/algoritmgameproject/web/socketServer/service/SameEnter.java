@@ -177,7 +177,8 @@
 //        List<User> list = new ArrayList<>();
 //        list.add(user);
 //        list.add(user1);
-//
+////        service.enterRoom(dto, list.get(0));
+////        service.enterRoom(dto, list.get(1));
 //        int numberOfThreads = 2;
 //        ExecutorService sservice = Executors.newFixedThreadPool(10);
 //        CountDownLatch latch = new CountDownLatch(numberOfThreads);
@@ -185,11 +186,14 @@
 //        for (int i = 0; i < numberOfThreads; i++) {
 //            int finalI = i;
 //            sservice.submit(() -> {
-//                log.info("쓰레드 번호:{}",finalI);
-//                service.enterRoom(dto, list.get(finalI));
-//                log.info("입장 처리");
-//                latch.countDown();
+//
+//                    log.info("쓰레드 번호:{}",finalI);
+//                    log.info("입장 처리:{}",service.enterRoom(dto, list.get(finalI)));
+//                    if(service.enterRoom(dto, list.get(finalI))==null)log.info("입장상태:{}",false);
+//                    latch.countDown();
+//
 //            });
+//
 //        }
 //        latch.await();
 //        GameRoom roomById = gameRoomRepository.findRoomById(room.getServer(), room.getRoomId());

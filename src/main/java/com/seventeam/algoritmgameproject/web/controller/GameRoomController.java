@@ -1,6 +1,7 @@
 package com.seventeam.algoritmgameproject.web.controller;
 
 import com.seventeam.algoritmgameproject.config.HttpCode;
+import com.seventeam.algoritmgameproject.domain.model.game.UserGameInfo;
 import com.seventeam.algoritmgameproject.web.service.game_service.GameService;
 import com.seventeam.algoritmgameproject.web.service.login_service.UserDetailImpl;
 import com.seventeam.algoritmgameproject.web.dto.game_dto.CreateRoomRequestDto;
@@ -23,6 +24,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 
 
 @Slf4j
@@ -80,7 +82,9 @@ public class GameRoomController {
     public ResponseEntity<?> enterRoom(@RequestBody EnterAndExitRoomRequestDto dto, @AuthenticationPrincipal UserDetailImpl userDetail) {
         log.info("Enter:{}", dto.toString());
         if (service.isEnter(dto.getServer(), dto.getRoomId())) {
-            return new ResponseEntity<>(service.enterRoom(dto,userDetail.getUser()), HttpStatus.OK);
+            UserGameInfo userGameInfo = service.enterRoom(dto, userDetail.getUser());
+            if(userGameInfo==null)return new ResponseEntity<>(false, HttpStatus.OK);
+            return new ResponseEntity<>(userGameInfo, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(false, HttpStatus.OK);
         }

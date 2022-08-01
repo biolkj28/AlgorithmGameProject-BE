@@ -52,6 +52,7 @@ public class GameServiceImp implements GameService {
     private final GameServiceUtil util;
     public static final String ROOM_READY = "ROOM_READY";
     private static final ConcurrentMap<String, Integer> readyMap = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<String, Integer> enterMap = new ConcurrentHashMap<>();
 
     @Override
     public FindRoomsResult findRooms(int langIdx, int levelIdx, String username) {
@@ -111,22 +112,19 @@ public class GameServiceImp implements GameService {
         log.info("방: {} 입장:{}", dto.getRoomId(), user.getUserId());
         GameRoom room = Optional.ofNullable(gameRoomRepository.findRoomById(dto.getServer(), dto.getRoomId()))
                 .orElseThrow(() -> new NullPointerException("해당 방을 찾을 수 없습니다."));
-
+        Integer check = enterMap.putIfAbsent(dto.getRoomId(), 1);
+        if (check!=null)return null;
         UserGameInfo creator = room.getCreatorGameInfo();
-        boolean check = saveEnterInfoRedis(room, user);
+        saveEnterInfoRedis(room, user);
         log.info("입장 처리 된 유저:{},처리 여부:{}", user.getUserId(), check);
-        if (!check) {
-            throw new IllegalStateException("정원 초과 입니다.");
-        }
         return creator;
     }
 
     @Override
-    public boolean saveEnterInfoRedis(GameRoom room, User user) {
-        boolean check = true;
-        List<Object> execute = redisTemplate.execute(new SessionCallback<List<Object>>() {
+    public void saveEnterInfoRedis(GameRoom room, User user) {
+         redisTemplate.execute(new SessionCallback<Object>() {
             @Override
-            public List<Object> execute(@NonNull RedisOperations operations) {
+            public Object execute(@NonNull RedisOperations operations) {
 
                 try {
                     redisTemplate.watch(room.getRoomId());
@@ -138,17 +136,12 @@ public class GameServiceImp implements GameService {
                     sessionRepository.saveRoomIdBySession(user.getUserId(), room.getRoomId());
                 } catch (Exception e) {
                     redisTemplate.discard();
+                    return null;
                 }
                 return operations.exec();
             }
         });
 
-        assert execute != null;
-        if (execute.size() == 0) {
-            return false;
-        } else {
-            return check;
-        }
     }
 
 
@@ -183,7 +176,12 @@ public class GameServiceImp implements GameService {
         if (username != null && role != null) {
             //중간에 방 나갔을 때 준비 데이터 존재 시 삭제
             boolean existKey = readyMap.containsKey(ROOM_READY + room.getRoomId());
-
+            try {
+                enterMap.remove(room.getRoomId());    
+            }catch (Exception e){
+                log.info("데이터 없음");
+            }
+            
             if (existKey) {
                 readyMap.remove(ROOM_READY + room.getRoomId());
             }
