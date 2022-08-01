@@ -4,9 +4,12 @@ import com.seventeam.algoritmgameproject.domain.model.game.GameProcessMessage;
 import com.seventeam.algoritmgameproject.domain.model.login.User;
 
 public interface GameProcess {
+    // 게임 중 수신 메시지 처리 매니저, 승리, 패배, 컴파일 3번 실패, 타임아웃 ,탈주
     void GameProcessManager(GameProcessMessage.Request request);
 
+    // 상대에게 퇴장 메시지 전송
     void exit(GameProcessMessage.Request request);
+
     void exitAndComPile3FailWinMessage(GameProcessMessage.Request request);
 
     void timeoutMessage(GameProcessMessage.Request request);
