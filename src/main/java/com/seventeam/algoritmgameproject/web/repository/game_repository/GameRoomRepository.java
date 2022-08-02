@@ -21,7 +21,7 @@ import java.util.Objects;
 public class GameRoomRepository {
 
 
-    private static final String FIND_SERVER="FIND_SERVER";
+    private static final String FIND_SERVER = "FIND_SERVER";
     private final RedisTemplate<String, Object> redisTemplate;
     private HashOperations<String, String, GameRoom> hashOpsGameRoom;
 
@@ -36,9 +36,16 @@ public class GameRoomRepository {
         List<GameRoom> values = hashOpsGameRoom.values(server);
         List<GameRoom> isEnterRooms = new ArrayList<>();
         for (GameRoom value : values) {
-            if (value.isEnter()) {
-
+            if (value.isEnter() && value.getCreatorGameInfo() != null) {
                 isEnterRooms.add(value);
+
+            } else if (value.getCreatorGameInfo() == null) {
+                try {
+                    deleteRoom(value.getServer(), value.getRoomId());
+                    deleteServerRoomData(value.getRoomId());
+                } catch (Exception e) {
+                    log.info("삭제 데이터 없음");
+                }
             }
         }
         return isEnterRooms;
@@ -53,7 +60,8 @@ public class GameRoomRepository {
         log.info("찾은 서버 이름:{}", Objects.requireNonNull(redisTemplate.opsForValue().get(FIND_SERVER + roomId)));
         return Objects.requireNonNull(redisTemplate.opsForValue().get(FIND_SERVER + roomId)).toString();
     }
-    public void deleteServerRoomData(String roomId){
+
+    public void deleteServerRoomData(String roomId) {
         redisTemplate.delete(FIND_SERVER + roomId);
     }
 
@@ -66,7 +74,7 @@ public class GameRoomRepository {
                 .creatorGameInfo(creator)
                 .build();
 
-        log.info("서버에 방생성:{}",FIND_SERVER + gameRoom.getRoomId());
+        log.info("서버에 방생성:{}", FIND_SERVER + gameRoom.getRoomId());
         redisTemplate.opsForValue().set(FIND_SERVER + gameRoom.getRoomId(), gameRoom.getServer());
 
         hashOpsGameRoom.put(
@@ -77,7 +85,7 @@ public class GameRoomRepository {
 
         return gameRoom;
     }
-    
+
     public void deleteRoom(String server, String roomId) {
         hashOpsGameRoom.delete(server, roomId);
     }
@@ -85,7 +93,7 @@ public class GameRoomRepository {
     public void changeCreator(GameRoom room, UserGameInfo userGameInfo) {
         room.changeCreator(userGameInfo);
         hashOpsGameRoom.put(room.getServer(), room.getRoomId(), room);
-        log.info("방장 정보 갱신:{}",room.getCreatorGameInfo().getPlayerName());
+        log.info("방장 정보 갱신:{}", room.getCreatorGameInfo().getPlayerName());
     }
 
     public void enterAndExitGameRoom(GameRoom room, boolean enter) {

@@ -17,6 +17,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.HTML;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -140,6 +141,7 @@ public class CompilerServiceImp implements CompilerService {
 
     @Override
     public CompileResultDto errorResult(String output, CompileRequestDto dto, User user) {
+/*      오류 로그 HTML 출력, 프론트에서 사용 안함
 
         int len = output.length();
         StringBuilder out = new StringBuilder(output);
@@ -158,13 +160,13 @@ public class CompilerServiceImp implements CompilerService {
 
             errorMsg.append(s.trim());
             errorMsg.append("<br>");
-        }
+        }*/
 
         compileRequestMap.remove(dto.getRoomId());
         service.compileFail(user.getUserId(), dto.getRoomId());
 
         return CompileResultDto.builder()
-                .msg(errorMsg.toString())
+                .msg("오답")
                 .result(false)
                 .build();
     }
