@@ -189,16 +189,18 @@ public class CompilerServiceImp implements CompilerService {
             allById.forEach(testcases::add);
             return testcases;
 
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             // 익셉션 시 DB 데이터 가져오기
             List<TestCase> list = repository.getTestCases(questionId);
             List<TestCaseRedis> cases = new ArrayList<>();
-
+            int cnt =1;
             for (TestCase testCase : list) {
+                if(cnt==11)break;
                 TestCaseRedis redis = new TestCaseRedis();
                 BeanUtils.copyProperties(testCase, redis);
                 redis.setQuestionId(questionId);
                 cases.add(redis);
+                cnt++;
             }
             return cases;
         }
