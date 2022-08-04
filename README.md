@@ -35,9 +35,9 @@
   * [🏷 즉각 피드백 반영](https://github.com/Epikoding/Chinda_chatting/blob/Chinda_chatting/README.md#%EC%A6%89%EA%B0%81-%ED%94%BC%EB%93%9C%EB%B0%B1-%EB%B0%98%EC%98%81)
   * [🏷 게임을 재미있게 즐기기 위한 대회](https://github.com/Epikoding/Chinda_chatting/blob/Chinda_chatting/README.md#%EA%B2%8C%EC%9E%84%EC%9D%84-%EC%9E%AC%EB%AF%B8%EC%9E%88%EA%B2%8C-%EC%A6%90%EA%B8%B0%EA%B8%B0-%EC%9C%84%ED%95%9C-%EB%8C%80%ED%9A%8C)
 - [🧑🏻‍🔧  피드백 개선](https://github.com/Epikoding/Chinda_chatting/blob/Chinda_chatting/README.md#-%ED%94%BC%EB%93%9C%EB%B0%B1-%EA%B0%9C%EC%84%A0)
-  * [🏷 배경음 및 효과음 볼륨 조절](https://github.com/Epikoding/Chinda_chatting/blob/Chinda_chatting/README.md#%EB%B0%B0%EA%B2%BD%EC%9D%8C-%EB%B0%8F-%ED%9A%A8%EA%B3%BC%EC%9D%8C-%EB%B3%BC%EB%A5%A8-%EC%A1%B0%EC%A0%88)
-  * [🏷 시작 버튼 추가](https://github.com/Epikoding/Chinda_chatting/blob/Chinda_chatting/README.md#%EC%8B%9C%EC%9E%91-%EB%B2%84%ED%8A%BC-%EC%B6%94%EA%B0%80)
-  * [🏷 튜토리얼이 자동으로 보여지는 기능 추가](https://github.com/Epikoding/Chinda_chatting/blob/Chinda_chatting/README.md#%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC%EC%9D%B4-%EC%9E%90%EB%8F%99%EC%9C%BC%EB%A1%9C-%EB%B3%B4%EC%97%AC%EC%A7%80%EB%8A%94-%EA%B8%B0%EB%8A%A5-%EC%B6%94%EA%B0%80)
+  * [🏷 배경음 및 효과음 볼륨 조절](https://github.com/biolkj28/AlgorithmGameProject-BE#%EB%B0%B0%EA%B2%BD%EC%9D%8C-%EB%B0%8F-%ED%9A%A8%EA%B3%BC%EC%9D%8C-%EB%B3%BC%EB%A5%A8-%EC%A1%B0%EC%A0%88)
+  * [🏷 시작 버튼 추가](https://github.com/biolkj28/AlgorithmGameProject-BE#%EC%8B%9C%EC%9E%91-%EB%B2%84%ED%8A%BC-%EC%B6%94%EA%B0%80)
+  * [🏷 튜토리얼이 자동으로 보여지는 기능 추가](https://github.com/biolkj28/AlgorithmGameProject-BE#%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC%EC%9D%B4-%EC%9E%90%EB%8F%99%EC%9C%BC%EB%A1%9C-%EB%B3%B4%EC%97%AC%EC%A7%80%EB%8A%94-%EA%B8%B0%EB%8A%A5-%EC%B6%94%EA%B0%80)
   * [🏷 정원초과 알림](https://github.com/biolkj28/AlgorithmGameProject-BE#%EC%A0%95%EC%9B%90%EC%B4%88%EA%B3%BC-%EC%95%8C%EB%A6%BC)
 - [✍🏻 7조 한 줄 회고](https://github.com/biolkj28/AlgorithmGameProject-BE#7%EC%A1%B0-%ED%95%9C-%EC%A4%84-%ED%9A%8C%EA%B3%A0)
 
